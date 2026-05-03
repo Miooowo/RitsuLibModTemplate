@@ -1,0 +1,8 @@
+{
+  "RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_STRIKE.title": "模板打击",
+  "RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_STRIKE.description": "造成 {Damage:diff()} 点伤害。",
+  "RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_STRIKE.smartDescription": "造成 {Damage:diff()} 点伤害。",
+  "RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_DEFEND.title": "模板防御",
+  "RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_DEFEND.description": "获得 {Block:diff()} 点格挡。",
+  "RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_DEFEND.smartDescription": "获得 {Block:diff()} 点格挡。"
+}

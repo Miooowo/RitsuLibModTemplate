@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <PackageType>Template</PackageType>
+    <PackageId>STS2.RitsuLib.ModTemplate</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Title>RitsuLib Mod Template</Title>
+    <Authors>Nothing</Authors>
+    <Description>A dotnet new template for creating Slay the Spire 2 mods built on RitsuLib.</Description>
+    <PackageTags>dotnet-new;templates;sts2;ritsulib;godot;mod</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="RitsuLibModTemplate\**\*"
+             Exclude="RitsuLibModTemplate\.git\**;RitsuLibModTemplate\.godot\**;RitsuLibModTemplate\.idea\**;RitsuLibModTemplate\.vs\**;RitsuLibModTemplate\bin\**;RitsuLibModTemplate\obj\**;RitsuLibModTemplate\local.props;RitsuLibModTemplate\**\*.user;RitsuLibModTemplate\**\*.suo" />
+    <None Include="RitsuLibModTemplate\README.md" Pack="true" PackagePath="" Link="README.md" />
+  </ItemGroup>
+</Project>
