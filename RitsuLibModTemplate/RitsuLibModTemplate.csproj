@@ -1,80 +1,97 @@
 <Project Sdk="Godot.NET.Sdk/4.5.1">
-  <Import Project=".\local.props" Condition="Exists('.\local.props')" />
+    <Import Project=".\local.props" Condition="Exists('.\local.props')"/>
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <LangVersion>12.0</LangVersion>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>true</ImplicitUsings>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <EnableDynamicLoading>true</EnableDynamicLoading>
-    <RootNamespace>RitsuLibModTemplate</RootNamespace>
-    <AppOutputBase>$(MSBuildProjectDirectory)\</AppOutputBase>
-    <PathMap>$(AppOutputBase)=.\</PathMap>
-    <NoWarn>$(NoWarn);MSB3270;CS0436</NoWarn>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>12.0</LangVersion>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>true</ImplicitUsings>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        <RootNamespace>RitsuLibModTemplate</RootNamespace>
+        <AppOutputBase>$(MSBuildProjectDirectory)\</AppOutputBase>
+        <PathMap>$(AppOutputBase)=.\</PathMap>
+        <NoWarn>$(NoWarn);MSB3270;CS0436</NoWarn>
 
-    <GodotExportPreset>Windows Desktop</GodotExportPreset>
-    <Sts2Dir Condition="'$(Sts2Dir)' == ''">$(MSBuildProgramFiles32)\Steam\steamapps\common\Slay the Spire 2</Sts2Dir>
-    <Sts2DataDir Condition="'$(Sts2DataDir)' == ''">$(Sts2Dir)\data_sts2_windows_x86_64</Sts2DataDir>
-    <ModOutputDir>$(Sts2Dir)\mods\$(MSBuildProjectName)\</ModOutputDir>
-    <ModPckPath>$(ModOutputDir)$(MSBuildProjectName).pck</ModPckPath>
-    <CopyModOnBuild Condition="'$(CopyModOnBuild)' == ''">true</CopyModOnBuild>
-    <RunPckExport Condition="'$(RunPckExport)' == '' and '$(DesignTimeBuild)' != 'true'">true</RunPckExport>
-    <RunPckExport Condition="'$(RunPckExport)' == ''">false</RunPckExport>
-  </PropertyGroup>
+        <GodotExportPreset>Windows Desktop</GodotExportPreset>
+        <Sts2Dir Condition="'$(Sts2Dir)' == ''">$(MSBuildProgramFiles32)\Steam\steamapps\common\Slay the Spire 2</Sts2Dir>
+        <Sts2DataDir Condition="'$(Sts2DataDir)' == ''">$(Sts2Dir)\data_sts2_windows_x86_64</Sts2DataDir>
+        <ModOutputDir>$(Sts2Dir)\mods\$(MSBuildProjectName)\</ModOutputDir>
+        <ModPckPath>$(ModOutputDir)$(MSBuildProjectName).pck</ModPckPath>
+        <CopyModOnBuild Condition="'$(CopyModOnBuild)' == ''">true</CopyModOnBuild>
+        <RunPckExport Condition="'$(RunPckExport)' == '' and '$(DesignTimeBuild)' != 'true'">true</RunPckExport>
+        <RunPckExport Condition="'$(RunPckExport)' == ''">false</RunPckExport>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Krafs.Publicizer" Version="2.2.1" PrivateAssets="all" />
-    <PackageReference Include="STS2.RitsuLib" Version="*" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Krafs.Publicizer" Version="2.2.1" PrivateAssets="all"/>
+        <!-- 默认：主线 RitsuLib 面向 STS2 0.104.0+，并跟踪 NuGet 最新版本。 -->
+        <!-- Default: mainline RitsuLib targets STS2 0.104.0+ and tracks the latest NuGet version. -->
+        <PackageReference Include="STS2.RitsuLib" Version="*"/>
+        <!--
+          如需面向 STS2 0.103.2 分支构建，请注释上方主线包，并启用下方兼容包。
+          兼容包不会恢复旧分支的特定 API 兼容处理，老 Mod 仍可能需要修改代码。
 
-  <ItemGroup>
-    <Publicize Include="sts2" IncludeVirtualMembers="false" IncludeCompilerGeneratedMembers="false" />
-  </ItemGroup>
+          For STS2 0.103.2 branch builds, comment out the mainline package above and enable this package.
+          This compat package does not restore old branch-specific API shims; older mods may still need code changes.
+        -->
+        <!--<PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="0.2.19" />-->
+    
+    </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="0Harmony" HintPath="$(Sts2DataDir)\0Harmony.dll" Private="True" />
-    <Reference Include="sts2" HintPath="$(Sts2DataDir)\sts2.dll" Private="True" />
-    <Reference Include="Steamworks.NET" HintPath="$(Sts2DataDir)\Steamworks.NET.dll" Private="True" />
-  </ItemGroup>
+    <ItemGroup>
+        <Publicize Include="sts2" IncludeVirtualMembers="false" IncludeCompilerGeneratedMembers="false"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <AdditionalFiles Include="RitsuLibModTemplate/localization/**/*.json" />
+    <ItemGroup>
+        <Reference Include="0Harmony" HintPath="$(Sts2DataDir)\0Harmony.dll" Private="True"/>
+        <Reference Include="sts2" HintPath="$(Sts2DataDir)\sts2.dll" Private="True"/>
+        <Reference Include="Steamworks.NET" HintPath="$(Sts2DataDir)\Steamworks.NET.dll" Private="True"/>
+    </ItemGroup>
 
-    <Compile Remove="RitsuLibModTemplate/**" />
-    <EmbeddedResource Remove="RitsuLibModTemplate/**" />
-    <None Include="RitsuLibModTemplate/**" />
-    <None Include="RitsuLibModTemplate.json" />
-    <None Include="project.godot" />
-    <None Include="export_presets.cfg" />
-    <None Include=".gitignore" />
-    <None Include="local.props.template" />
-  </ItemGroup>
+    <ItemGroup>
+        <!-- 中文：排除 Godot、IDE 和构建输出目录，避免本地生成文件参与编译。 -->
+        <!-- English: Exclude Godot, IDE, and build output directories so local generated files are not compiled. -->
+        <Compile Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**"/>
+        <EmbeddedResource Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**"/>
+        <None Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**"/>
 
-  <ItemGroup>
-    <Content Include="local.props" Condition="Exists('local.props')" />
-  </ItemGroup>
+        <AdditionalFiles Include="RitsuLibModTemplate/localization/**/*.json"/>
 
-  <ItemGroup>
-    <Folder Include="RitsuLibModTemplate\images\cards\" />
-    <Folder Include="RitsuLibModTemplate\images\characters\" />
-    <Folder Include="RitsuLibModTemplate\images\relics\" />
-    <Folder Include="RitsuLibModTemplate\scenes\characters\" />
-  </ItemGroup>
+        <Compile Remove="RitsuLibModTemplate/**"/>
+        <EmbeddedResource Remove="RitsuLibModTemplate/**"/>
+        <None Include="RitsuLibModTemplate/**"/>
+        <None Include="RitsuLibModTemplate.json"/>
+        <None Include="project.godot"/>
+        <None Include="export_presets.cfg"/>
+        <None Include=".gitignore"/>
+        <None Include="local.props.template"/>
+    </ItemGroup>
 
-  <Target Name="ValidateSts2GameInstall" BeforeTargets="ResolveAssemblyReferences">
-    <Error Condition="!Exists('$(Sts2DataDir)\sts2.dll')" Text="Could not find sts2.dll under '$(Sts2DataDir)'. Copy local.props.template to local.props and set Sts2Dir/Sts2DataDir for your local game install." />
-  </Target>
+    <ItemGroup>
+        <Content Include="local.props" Condition="Exists('local.props')"/>
+    </ItemGroup>
 
-  <Target Name="Copy Mod" AfterTargets="Build" Condition="'$(CopyModOnBuild)' != 'false'">
-    <MakeDir Directories="$(ModOutputDir)" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModOutputDir)" />
-    <Copy SourceFiles="$(MSBuildProjectDirectory)\$(MSBuildProjectName).json" DestinationFolder="$(ModOutputDir)" />
-  </Target>
+    <ItemGroup>
+        <Folder Include="RitsuLibModTemplate\images\cards\"/>
+        <Folder Include="RitsuLibModTemplate\images\characters\"/>
+        <Folder Include="RitsuLibModTemplate\images\relics\"/>
+        <Folder Include="RitsuLibModTemplate\scenes\characters\"/>
+    </ItemGroup>
 
-  <Target Name="Export Mod PCK" AfterTargets="Build" Condition="'$(RunPckExport)' == 'true' and '$(STS2_SKIP_PCK_EXPORT)' != '1'">
-    <Error Condition="'$(GodotExe)' == '' or !Exists('$(GodotExe)')" Text="GodotExe is required for PCK export. Copy local.props.template to local.props and set GodotExe, or build with /p:RunPckExport=false." />
-    <MakeDir Directories="$(ModOutputDir)" />
-    <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="&quot;$(GodotExe)&quot; --headless --path &quot;$(MSBuildProjectDirectory)&quot; --export-pack &quot;$(GodotExportPreset)&quot; &quot;$(ModPckPath)&quot;" EnvironmentVariables="STS2_SKIP_PCK_EXPORT=1" />
-  </Target>
+    <Target Name="ValidateSts2GameInstall" BeforeTargets="ResolveAssemblyReferences">
+        <Error Condition="!Exists('$(Sts2DataDir)\sts2.dll')" Text="Could not find sts2.dll under '$(Sts2DataDir)'. Copy local.props.template to local.props and set Sts2Dir/Sts2DataDir for your local game install."/>
+    </Target>
+
+    <Target Name="CopyMod" AfterTargets="Build" Condition="'$(CopyModOnBuild)' != 'false'">
+        <MakeDir Directories="$(ModOutputDir)"/>
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModOutputDir)"/>
+        <Copy SourceFiles="$(MSBuildProjectDirectory)\$(MSBuildProjectName).json" DestinationFolder="$(ModOutputDir)"/>
+    </Target>
+
+    <Target Name="ExportPCK" AfterTargets="Build" Condition="'$(RunPckExport)' == 'true' and '$(STS2_SKIP_PCK_EXPORT)' != '1'">
+        <Error Condition="'$(GodotExe)' == '' or !Exists('$(GodotExe)')" Text="GodotExe is required for PCK export. Copy local.props.template to local.props and set GodotExe, or build with /p:RunPckExport=false."/>
+        <MakeDir Directories="$(ModOutputDir)"/>
+        <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="&quot;$(GodotExe)&quot; --headless --path &quot;$(MSBuildProjectDirectory)&quot; --export-pack &quot;$(GodotExportPreset)&quot; &quot;$(ModPckPath)&quot;" EnvironmentVariables="STS2_SKIP_PCK_EXPORT=1"/>
+    </Target>
 </Project>

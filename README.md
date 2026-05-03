@@ -1,5 +1,7 @@
 # RitsuLibModTemplate
 
+语言 / Languages：中文 | [English](README.en.md)
+
 这是一个可复制、可构建的 RitsuLib Mod 模板，保留通用 Godot/C# 工程结构、示例内容和静态占位资源。
 
 
@@ -8,6 +10,24 @@
 - [STS2-RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib)：Slay the Spire 2 Mod 的共享框架库，本模板基于它提供内容注册、角色脚手架和 Godot 资源接入能力。
 - [RitsuLib GitHub 教程目录](https://github.com/GlitchedReme/SlayTheSpire2ModdingTutorials/tree/master/RitsuLib)：适合按文件阅读教程和示例。
 - [Slay the Spire 2 Modding Tutorials 网页版](https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html)：适合浏览完整教程站点。
+
+## RitsuLib 版本选择和兼容性
+
+模板默认使用主线 RitsuLib，并在 `.csproj` 中保留最新可用版本配置：
+
+```xml
+<PackageReference Include="STS2.RitsuLib" Version="*" />
+```
+
+主线版本主要支持游戏 `0.104.0` 及以上版本。由于上游 API 签名变化，针对 `0.99.1` 的大部分兼容处理已经移除；`Keyword`、`Pile` 等 API 已改为统一 ID 生成规则，部分旧的特定参数不再保留。
+
+如果需要针对游戏 `0.103.2` 分支构建，可以在 `.csproj` 中注释默认包，并启用模板里预留的兼容包配置：
+
+```xml
+<PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="0.2.19" />
+```
+
+兼容包只是用于分包支持旧版本分支，并没有重新引入旧的特定兼容性处理。部分老 Mod 仍然需要修改并重新编译；当游戏将 beta 分支合并到正式版时，也需要主动针对新版本 API 调整代码。
 
 模板包含：
 
@@ -81,16 +101,26 @@ Copy-Item .\local.props.template .\local.props
 
 ## 构建
 
-只验证 C# 编译，并避免复制到游戏目录：
+只验证 C# 编译，并跳过 `CopyMod` 和 `ExportPCK`：
 
 ```powershell
 dotnet build .\RitsuLibModTemplate.csproj /p:RunPckExport=false /p:CopyModOnBuild=false
 ```
 
-正常构建、复制 dll/manifest 并导出 pck：
+正常构建会在 `Build` 后运行两个 MSBuild target：
+
+- `CopyMod`：复制 dll 和 manifest 到游戏的 `mods/RitsuLibModTemplate` 目录。
+- `ExportPCK`：调用 `GodotExe` 导出 pck 到同一个 Mod 目录。
 
 ```powershell
 dotnet build .\RitsuLibModTemplate.csproj
+```
+
+也可以只跳过其中一个 target：
+
+```powershell
+dotnet build .\RitsuLibModTemplate.csproj /p:CopyModOnBuild=false
+dotnet build .\RitsuLibModTemplate.csproj /p:RunPckExport=false
 ```
 
 构建成功后，dll、manifest 和 pck 会复制到游戏的 `mods/RitsuLibModTemplate` 目录。

@@ -3,7 +3,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <PackageType>Template</PackageType>
     <PackageId>STS2.RitsuLib.ModTemplate</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.0.1</PackageVersion>
     <Title>RitsuLib Mod Template</Title>
     <Authors>Nothing</Authors>
     <Description>A dotnet new template for creating Slay the Spire 2 mods built on RitsuLib.</Description>
@@ -20,7 +20,8 @@
 
   <ItemGroup>
     <Content Include="RitsuLibModTemplate\**\*"
-             Exclude="RitsuLibModTemplate\.git\**;RitsuLibModTemplate\.godot\**;RitsuLibModTemplate\.idea\**;RitsuLibModTemplate\.vs\**;RitsuLibModTemplate\bin\**;RitsuLibModTemplate\obj\**;RitsuLibModTemplate\local.props;RitsuLibModTemplate\**\*.user;RitsuLibModTemplate\**\*.suo" />
+             Exclude="RitsuLibModTemplate\.git\**;RitsuLibModTemplate\.godot\**;RitsuLibModTemplate\.idea\**;RitsuLibModTemplate\.vs\**;RitsuLibModTemplate\bin\**;RitsuLibModTemplate\obj\**;RitsuLibModTemplate\local.props;RitsuLibModTemplate\**\*.user;RitsuLibModTemplate\**\*.suo;RitsuLibModTemplate\**\*.uid;RitsuLibModTemplate\**\*.import" />
     <None Include="RitsuLibModTemplate\README.md" Pack="true" PackagePath="" Link="README.md" />
+    <None Include="RitsuLibModTemplate\README.en.md" Pack="true" PackagePath="" Link="README.en.md" />
   </ItemGroup>
 </Project>

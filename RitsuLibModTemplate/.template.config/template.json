@@ -71,7 +71,9 @@
             "obj/**",
             "local.props",
             "*.user",
-            "*.suo"
+            "*.suo",
+            "**/*.uid",
+            "**/*.import"
           ]
         }
       ]
