@@ -10,6 +10,8 @@
 - [STS2-RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib)：Slay the Spire 2 Mod 的共享框架库，本模板基于它提供内容注册、角色脚手架和 Godot 资源接入能力。
 - [RitsuLib GitHub 教程目录](https://github.com/GlitchedReme/SlayTheSpire2ModdingTutorials/tree/master/RitsuLib)：适合按文件阅读教程和示例。
 - [Slay the Spire 2 Modding Tutorials 网页版](https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html)：适合浏览完整教程站点。
+- 教程 Wiki： [中文首页](https://github.com/alkaid616/RitsuLibModTemplate/wiki/Home) | [English Home](https://github.com/alkaid616/RitsuLibModTemplate/wiki/Home-EN)
+- 这套 Wiki 以 Rider 为主线，先跑通模板，再逐步理解 RitsuLib 的注册与内容模型。
 
 ## RitsuLib 版本选择和兼容性
 

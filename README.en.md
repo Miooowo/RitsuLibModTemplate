@@ -9,6 +9,8 @@ RitsuLibModTemplate is a copyable and buildable RitsuLib mod template. It keeps 
 - [STS2-RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib): the shared framework library for Slay the Spire 2 mods. This template uses it for content registration, character scaffolding, and Godot resource integration.
 - [RitsuLib tutorials on GitHub](https://github.com/GlitchedReme/SlayTheSpire2ModdingTutorials/tree/master/RitsuLib): useful for reading tutorials and examples by file.
 - [Slay the Spire 2 Modding Tutorials site](https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html): useful for browsing the full tutorial site.
+- Tutorial Wiki: [Chinese Home](https://github.com/alkaid616/RitsuLibModTemplate/wiki/Home) | [English Home](https://github.com/alkaid616/RitsuLibModTemplate/wiki/Home-EN)
+- This wiki is Rider-first: get the template running first, then learn how RitsuLib registers and builds content.
 
 ## RitsuLib Version Selection and Compatibility
 
