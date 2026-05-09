@@ -16,6 +16,11 @@
     <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$(MSBuildProjectDirectory)\bin\$(Configuration)</PackageOutputPath>
     <LocalTemplatePackagePath Condition="'$(LocalTemplatePackagePath)' == ''">$(PackageOutputPath)\$(PackageId).$(PackageVersion).nupkg</LocalTemplatePackagePath>
     <InstallTemplateOnPack Condition="'$(InstallTemplateOnPack)' == ''">true</InstallTemplateOnPack>
+    <PublishTemplateOnPack Condition="'$(PublishTemplateOnPack)' == ''">false</PublishTemplateOnPack>
+    <NuGetPushSource Condition="'$(NuGetPushSource)' == ''">https://api.nuget.org/v3/index.json</NuGetPushSource>
+    <NuGetApiKey Condition="'$(NuGetApiKey)' == ''">$(NUGET_API_KEY)</NuGetApiKey>
+    <NuGetPushTimeoutSeconds Condition="'$(NuGetPushTimeoutSeconds)' == ''">300</NuGetPushTimeoutSeconds>
+    <AllowNonReleaseNuGetPublish Condition="'$(AllowNonReleaseNuGetPublish)' == ''">false</AllowNonReleaseNuGetPublish>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <NoDefaultExcludes>true</NoDefaultExcludes>
     <NoWarn>$(NoWarn);NU5128</NoWarn>
@@ -40,4 +45,26 @@
           AfterTargets="Pack"
           DependsOnTargets="_InstallTemplatePackage"
           Condition="'$(InstallTemplateOnPack)' == 'true'" />
+
+  <Target Name="_ValidateNuGetPublishPackage">
+    <Error Condition="'$(NuGetApiKey)' == ''"
+           Text="NuGetApiKey is required to publish. Set the NUGET_API_KEY environment variable or pass /p:NuGetApiKey=*** from Rider." />
+    <Error Condition="'$(Configuration)' != 'Release' and '$(AllowNonReleaseNuGetPublish)' != 'true'"
+           Text="Publishing to nuget.org requires -c Release. Pass /p:AllowNonReleaseNuGetPublish=true only for intentional test feeds." />
+    <Error Condition="!Exists('$(LocalTemplatePackagePath)')"
+           Text="Package file was not found: $(LocalTemplatePackagePath)" />
+  </Target>
+
+  <Target Name="_PublishTemplatePackage" DependsOnTargets="_ValidateNuGetPublishPackage">
+    <Message Importance="High" Text="Publishing $(LocalTemplatePackagePath) to $(NuGetPushSource)" />
+    <Exec EchoOff="true"
+          Command="dotnet nuget push &quot;$(LocalTemplatePackagePath)&quot; --api-key &quot;$(NuGetApiKey)&quot; --source &quot;$(NuGetPushSource)&quot; --timeout &quot;$(NuGetPushTimeoutSeconds)&quot; --skip-duplicate --no-symbols" />
+  </Target>
+
+  <Target Name="PublishTemplateToNuGet" DependsOnTargets="Pack;_PublishTemplatePackage" />
+
+  <Target Name="PublishTemplateAfterPack"
+          AfterTargets="Pack"
+          DependsOnTargets="_PublishTemplatePackage"
+          Condition="'$(PublishTemplateOnPack)' == 'true'" />
 </Project>
