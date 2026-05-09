@@ -3,7 +3,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <PackageType>Template</PackageType>
     <PackageId>STS2.RitsuLib.ModTemplate</PackageId>
-    <PackageVersion>1.0.1</PackageVersion>
+    <PackageVersion>1.0.2</PackageVersion>
     <Title>RitsuLib Mod Template</Title>
     <Authors>Nothing</Authors>
     <Description>A dotnet new template for creating Slay the Spire 2 mods built on RitsuLib.</Description>
@@ -13,6 +13,9 @@
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
+    <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$(MSBuildProjectDirectory)\bin\$(Configuration)</PackageOutputPath>
+    <LocalTemplatePackagePath Condition="'$(LocalTemplatePackagePath)' == ''">$(PackageOutputPath)\$(PackageId).$(PackageVersion).nupkg</LocalTemplatePackagePath>
+    <InstallTemplateOnPack Condition="'$(InstallTemplateOnPack)' == ''">true</InstallTemplateOnPack>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <NoDefaultExcludes>true</NoDefaultExcludes>
     <NoWarn>$(NoWarn);NU5128</NoWarn>
@@ -24,4 +27,17 @@
     <None Include="RitsuLibModTemplate\README.md" Pack="true" PackagePath="" Link="README.md" />
     <None Include="RitsuLibModTemplate\README.en.md" Pack="true" PackagePath="" Link="README.en.md" />
   </ItemGroup>
+
+  <Target Name="_InstallTemplatePackage">
+    <Message Importance="High" Text="Installing local template package: $(LocalTemplatePackagePath)" />
+    <Exec Command="dotnet new uninstall &quot;$(PackageId)&quot;" IgnoreExitCode="true" />
+    <Exec Command="dotnet new install &quot;$(LocalTemplatePackagePath)&quot;" />
+  </Target>
+
+  <Target Name="InstallTemplate" DependsOnTargets="Pack;_InstallTemplatePackage" />
+
+  <Target Name="InstallTemplateAfterPack"
+          AfterTargets="Pack"
+          DependsOnTargets="_InstallTemplatePackage"
+          Condition="'$(InstallTemplateOnPack)' == 'true'" />
 </Project>

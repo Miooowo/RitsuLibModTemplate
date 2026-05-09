@@ -1,13 +1,15 @@
 {
   "id": "RitsuLibModTemplate",
   "name": "RitsuLibModTemplate",
+  "pck_name": "RitsuLibModTemplate",
   "author": "Author",
   "description": "A starter Slay the Spire 2 mod template built on RitsuLib.",
-  "version": "v0.0.0",
+  "version": "0.0.0",
   "has_pck": true,
   "has_dll": true,
-  "dependencies": [
-    "STS2-RitsuLib"
-  ],
-  "affects_gameplay": true
+  "affects_gameplay": true,
+  "dependencies": {
+    "id": "STS2-RitsuLib",
+    "min_version": "0.2.27"
+  }
 }
