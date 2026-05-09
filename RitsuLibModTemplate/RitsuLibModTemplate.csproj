@@ -18,6 +18,9 @@
         <Sts2DataDir Condition="'$(Sts2DataDir)' == ''">$(Sts2Dir)\data_sts2_windows_x86_64</Sts2DataDir>
         <ModOutputDir>$(Sts2Dir)\mods\$(MSBuildProjectName)\</ModOutputDir>
         <ModPckPath>$(ModOutputDir)$(MSBuildProjectName).pck</ModPckPath>
+        <!-- 本机测试时 RitsuLib 包/构建逻辑会使用这个目录把 RitsuLib 部署到游戏 mods/STS2-RitsuLib。 -->
+        <!-- Local test builds use this directory when RitsuLib package/build logic deploys RitsuLib to game mods/STS2-RitsuLib. -->
+        <RitsuLibDeployDir Condition="'$(RitsuLibDeployDir)' == ''">$(Sts2Dir)\mods\STS2-RitsuLib</RitsuLibDeployDir>
         <CopyModOnBuild Condition="'$(CopyModOnBuild)' == ''">true</CopyModOnBuild>
         <RunPckExport Condition="'$(RunPckExport)' == '' and '$(DesignTimeBuild)' != 'true'">true</RunPckExport>
         <RunPckExport Condition="'$(RunPckExport)' == ''">false</RunPckExport>
@@ -25,17 +28,25 @@
 
     <ItemGroup>
         <PackageReference Include="Krafs.Publicizer" Version="2.2.1" PrivateAssets="all"/>
-        <!-- 默认：主线 RitsuLib 面向 STS2 0.104.0+，并跟踪 NuGet 最新版本。 -->
-        <!-- Default: mainline RitsuLib targets STS2 0.104.0+ and tracks the latest NuGet version. -->
+        <!--
+          三个 RitsuLib 包一次只能启用一个。默认主线包面向 STS2 0.105.0+，并跟踪 NuGet 最新版本。
+          Only enable one RitsuLib package at a time. The default mainline package targets STS2 0.105.0+
+          and tracks the latest NuGet version.
+        -->
         <PackageReference Include="STS2.RitsuLib" Version="*"/>
         <!--
-          如需面向 STS2 0.103.2 分支构建，请注释上方主线包，并启用下方兼容包。
-          兼容包不会恢复旧分支的特定 API 兼容处理，老 Mod 仍可能需要修改代码。
-
-          For STS2 0.103.2 branch builds, comment out the mainline package above and enable this package.
-          This compat package does not restore old branch-specific API shims; older mods may still need code changes.
+          STS2 0.104.0 现在是兼容分支。仍针对 0.104.0 的代码请注释上方主线包，并启用这个包。
+          STS2 0.104.0 is now a compatibility branch. If your code still targets 0.104.0, comment out
+          the mainline package above and enable this package.
         -->
-        <!--<PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="0.2.19" />-->
+        <!--<PackageReference Include="STS2.RitsuLib.Compat.0.104.0" Version="*" />-->
+
+        <!--
+          STS2 0.103.2 和 0.104.0 一样是兼容分支。兼容包只选择对应游戏分支，不会恢复所有旧 API。
+          STS2 0.103.2 is also a compatibility branch like 0.104.0. Compatibility packages select the
+          matching game branch; they do not restore every old API.
+        -->
+        <!--<PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="*" />-->
     
     </ItemGroup>
 

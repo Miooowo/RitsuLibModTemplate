@@ -14,21 +14,33 @@ RitsuLibModTemplate is a copyable and buildable RitsuLib mod template. It keeps 
 
 ## RitsuLib Version Selection and Compatibility
 
-The template uses mainline RitsuLib by default and keeps the latest available NuGet version in the `.csproj`:
+The template uses mainline RitsuLib by default and keeps the latest available NuGet version in the `.csproj`. The maintained mainline now targets STS2 `0.105.0` and newer:
 
 ```xml
 <PackageReference Include="STS2.RitsuLib" Version="*" />
 ```
 
-Mainline RitsuLib primarily supports game version `0.104.0` and newer. Because upstream API signatures changed, most compatibility handling for `0.99.1` has been removed. APIs such as `Keyword` and `Pile` now use unified ID generation rules, and some older special-case parameters are no longer kept.
-
-If you need to build against the game `0.103.2` branch, comment out the default package in the `.csproj` and enable the reserved compatibility package:
+Only enable one RitsuLib package at a time. If your code still targets STS2 `0.104.0`, comment out the mainline package and enable the `0.104.0` compatibility package:
 
 ```xml
-<PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="0.2.19" />
+<PackageReference Include="STS2.RitsuLib.Compat.0.104.0" Version="*" />
 ```
 
-The compatibility package only provides branch-specific package selection. It does not bring back the old special compatibility shims. Some older mods may still need code changes and recompilation. When the game merges the beta branch into the stable version, you still need to update your mod for the new APIs.
+If you need to build against STS2 `0.103.2`, enable the `0.103.2` compatibility package:
+
+```xml
+<PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="*" />
+```
+
+STS2 `0.104.0` and `0.103.2` are both compatibility branches with the same maintenance level. Compatibility packages select the matching game branch; they do not restore every old API. Some older mods still need code changes and recompilation.
+
+When upgrading to STS2 `0.105.0` / mainline RitsuLib, check these areas:
+
+- Version conditional compilation now uses cumulative interval macros such as `STS2_AT_LEAST_<ver>`; the old single-target `STS2_V_<ver>` macros are no longer recommended.
+- AnyPlayer and AnyAny target logic changed, so old card targets, base constructor signatures, and registration flows should be checked against the new mainline API.
+- Cards now support extra icon count labels in the lower-right corner and include conflict handling with vanilla UI; custom UI or icon patches should verify display order and placement.
+- Retain/flush hooks and events have replacements, removals, or `[Obsolete]` markers; migrate old uses of `CardRetainedEvent`, `CardsFlushedEvent`, or legacy `Hook.*` entry points.
+- Badge, BadgeRuntimeTemplate, BadgePool.CreateAll, and ModBadgeTemplate constructor signatures changed with upstream APIs; old registered-mod death screen badge code may need updates to avoid `MissingMethodException`.
 
 The template includes:
 
@@ -92,11 +104,12 @@ Copy:
 Copy-Item .\local.props.template .\local.props
 ```
 
-Then set these values in `local.props`:
+Then set or override these values in `local.props`:
 
 - `Sts2Dir`: the Slay the Spire 2 install directory.
 - `Sts2DataDir`: the game DLL directory, usually `$(Sts2Dir)/data_sts2_windows_x86_64`.
 - `GodotExe`: the MegaDot/Godot executable used to export the PCK.
+- `RitsuLibDeployDir`: the local RitsuLib deployment directory, defaulting to `$(Sts2Dir)/mods/STS2-RitsuLib`. RitsuLib package/build logic uses it to copy RitsuLib into the game's mods directory; it is not this mod's output directory.
 
 `local.props` is already listed in `.gitignore`; do not commit it.
 
@@ -112,6 +125,8 @@ A normal build runs two MSBuild targets after `Build`:
 
 - `CopyMod`: copies the DLL and manifest to the game's `mods/RitsuLibModTemplate` directory.
 - `ExportPCK`: calls `GodotExe` and exports the PCK to the same mod directory.
+
+`RitsuLibDeployDir` separately controls where the RitsuLib framework itself is deployed locally. This mod's DLL, manifest, and PCK are still controlled by `ModOutputDir`.
 
 ```powershell
 dotnet build .\RitsuLibModTemplate.csproj

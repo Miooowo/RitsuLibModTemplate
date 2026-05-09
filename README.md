@@ -15,21 +15,33 @@
 
 ## RitsuLib 版本选择和兼容性
 
-模板默认使用主线 RitsuLib，并在 `.csproj` 中保留最新可用版本配置：
+模板默认使用主线 RitsuLib，并在 `.csproj` 中保留最新可用版本配置。主线维护版本现在是 STS2 `0.105.0` 及以上：
 
 ```xml
 <PackageReference Include="STS2.RitsuLib" Version="*" />
 ```
 
-主线版本主要支持游戏 `0.104.0` 及以上版本。由于上游 API 签名变化，针对 `0.99.1` 的大部分兼容处理已经移除；`Keyword`、`Pile` 等 API 已改为统一 ID 生成规则，部分旧的特定参数不再保留。
-
-如果需要针对游戏 `0.103.2` 分支构建，可以在 `.csproj` 中注释默认包，并启用模板里预留的兼容包配置：
+三个 RitsuLib 包一次只能启用一个。如果仍针对 STS2 `0.104.0` 的代码构建，请注释主线包并启用 `0.104.0` 兼容包：
 
 ```xml
-<PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="0.2.19" />
+<PackageReference Include="STS2.RitsuLib.Compat.0.104.0" Version="*" />
 ```
 
-兼容包只是用于分包支持旧版本分支，并没有重新引入旧的特定兼容性处理。部分老 Mod 仍然需要修改并重新编译；当游戏将 beta 分支合并到正式版时，也需要主动针对新版本 API 调整代码。
+如果需要针对 STS2 `0.103.2` 分支构建，请启用 `0.103.2` 兼容包：
+
+```xml
+<PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="*" />
+```
+
+`0.104.0` 和 `0.103.2` 现在都按兼容分支维护，维护级别相同。兼容包只是选择对应游戏分支，并不会恢复所有旧 API；部分老 Mod 仍然需要修改并重新编译。
+
+升级到 STS2 `0.105.0` / RitsuLib 主线时，请特别检查这些变化：
+
+- 版本条件编译改为累积分间隔宏 `STS2_AT_LEAST_<ver>`；传统单目标宏 `STS2_V_<ver>` 不再推荐使用。
+- AnyPlayer 和 AnyAny 目标逻辑已有调整，旧卡牌目标、基础构造函数签名和注册逻辑需要按新主线 API 检查。
+- 卡牌右下角支持额外图标数量标签，并处理与原版 UI 的冲突；自定义 UI 或图标补丁需要确认显示层级和位置。
+- 保留/flush 相关 hook 和 event 有替换、移除或 `[Obsolete]` 标记；旧代码中使用 `CardRetainedEvent`、`CardsFlushedEvent` 或旧 `Hook.*` 入口时需要迁移。
+- Badge、BadgeRuntimeTemplate、BadgePool.CreateAll 和 ModBadgeTemplate 构造签名随上游变化调整；旧的注册模组死亡界面 Badge 代码可能需要更新以避免 `MissingMethodException`。
 
 模板包含：
 
@@ -93,11 +105,12 @@ RitsuLibModTemplate/
 Copy-Item .\local.props.template .\local.props
 ```
 
-然后在 `local.props` 中设置：
+然后在 `local.props` 中设置或按需覆盖：
 
 - `Sts2Dir`：Slay the Spire 2 安装目录。
 - `Sts2DataDir`：游戏 dll 目录，通常是 `$(Sts2Dir)/data_sts2_windows_x86_64`。
 - `GodotExe`：用于导出 pck 的 MegaDot/Godot 可执行文件。
+- `RitsuLibDeployDir`：RitsuLib 本机部署目录，默认是 `$(Sts2Dir)/mods/STS2-RitsuLib`。它用于 RitsuLib 包/构建逻辑把 RitsuLib 复制到游戏 mods 目录，不是当前 Mod 自身的输出目录。
 
 `local.props` 已加入 `.gitignore`，不要提交。
 
@@ -113,6 +126,8 @@ dotnet build .\RitsuLibModTemplate.csproj /p:RunPckExport=false /p:CopyModOnBuil
 
 - `CopyMod`：复制 dll 和 manifest 到游戏的 `mods/RitsuLibModTemplate` 目录。
 - `ExportPCK`：调用 `GodotExe` 导出 pck 到同一个 Mod 目录。
+
+`RitsuLibDeployDir` 单独控制 RitsuLib 框架自身的本机部署位置；当前 Mod 的 dll、manifest 和 pck 仍由 `ModOutputDir` 控制。
 
 ```powershell
 dotnet build .\RitsuLibModTemplate.csproj
