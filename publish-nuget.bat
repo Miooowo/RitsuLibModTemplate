@@ -9,6 +9,7 @@ if "%NUGET_API_KEY%"=="PUT_YOUR_NUGET_API_KEY_HERE" (
 )
 
 set "CONFIGURATION=Release"
+set "NUGET_SOURCE=https://api.nuget.org/v3/index.json"
 
 set "PROJECT_FILE=%~dp0STS2.RitsuLib.ModTemplate.csproj"
 
@@ -24,9 +25,19 @@ if errorlevel 1 (
 )
 
 pushd "%~dp0" >nul
+echo.
+echo ============================================================
+echo Publishing NuGet template package
+echo Project: "%PROJECT_FILE%"
+echo Configuration: %CONFIGURATION%
+echo Source: %NUGET_SOURCE%
+echo This will pack the template and push it to nuget.org.
+echo ============================================================
+echo.
 dotnet msbuild "%PROJECT_FILE%" ^
   /t:PublishTemplateToNuGet ^
-  /p:Configuration="%CONFIGURATION%"
+  /p:Configuration="%CONFIGURATION%" ^
+  /p:NuGetPushSource="%NUGET_SOURCE%"
 set "EXIT_CODE=%ERRORLEVEL%"
 popd >nul
 
@@ -35,5 +46,5 @@ if not "%EXIT_CODE%"=="0" (
   exit /b %EXIT_CODE%
 )
 
-echo NuGet package published successfully.
+echo NuGet template package published successfully.
 exit /b 0
