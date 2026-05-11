@@ -20,6 +20,8 @@ The template uses mainline RitsuLib by default and keeps the latest available Nu
 <PackageReference Include="STS2.RitsuLib" Version="*" />
 ```
 
+The project also references `Nothing.STS2RitsuLib.ModAnalyzers` by default. This is an AI-written helper analyzer that reports common manifest and resource configuration issues in RitsuLib mod templates during development.
+
 Only enable one RitsuLib package at a time. If your code still targets STS2 `0.104.0`, comment out the mainline package and enable the `0.104.0` compatibility package:
 
 ```xml
@@ -95,6 +97,24 @@ RitsuLibModTemplate/
 5. Rename the resource directory `RitsuLibModTemplate/` to your `ModId`, then update the related `Entry.ResPath` paths in code.
 
 `res://RitsuLibModTemplate/...` is the Godot/PCK resource path. It maps to the repository resource directory `RitsuLibModTemplate/`, not to the C# namespace.
+
+## Manifest Format
+
+`RitsuLibModTemplate.json` uses the new dependency declaration format:
+
+```json
+{
+  "min_game_version": "0.105.1",
+  "dependencies": [
+    {
+      "id": "STS2-RitsuLib",
+      "version": "0.2.29"
+    }
+  ]
+}
+```
+
+After copying the template, keep `id` aligned with `Entry.ModId`. `dependencies` is now an array, and each dependency uses `id` and `version`; the old single-object `min_version` format is no longer used.
 
 ## Local Path Configuration
 

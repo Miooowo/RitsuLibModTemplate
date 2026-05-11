@@ -21,6 +21,8 @@
 <PackageReference Include="STS2.RitsuLib" Version="*" />
 ```
 
+项目还默认引用 `Nothing.STS2RitsuLib.ModAnalyzers`。这是一个 AI 编写的辅助分析器，用于在开发时提示 RitsuLib Mod 模板中常见的 manifest 和资源配置问题。
+
 三个 RitsuLib 包一次只能启用一个。如果仍针对 STS2 `0.104.0` 的代码构建，请注释主线包并启用 `0.104.0` 兼容包：
 
 ```xml
@@ -96,6 +98,24 @@ RitsuLibModTemplate/
 5. 把资源目录 `RitsuLibModTemplate/` 改成你的 `ModId`，并同步更新代码中的 `Entry.ResPath` 相关路径。
 
 `res://RitsuLibModTemplate/...` 是 Godot/PCK 内的资源路径，对应仓库里的 `RitsuLibModTemplate/` 资源目录，不是 C# namespace。
+
+## Manifest 格式
+
+`RitsuLibModTemplate.json` 使用新的依赖声明格式：
+
+```json
+{
+  "min_game_version": "0.105.1",
+  "dependencies": [
+    {
+      "id": "STS2-RitsuLib",
+      "version": "0.2.29"
+    }
+  ]
+}
+```
+
+复制模板后，`id` 仍需要和 `Entry.ModId` 保持一致；`dependencies` 现在是数组，每个依赖项使用 `id` 和 `version` 声明，不再使用旧的单对象 `min_version` 写法。
 
 ## 配置本机路径
 

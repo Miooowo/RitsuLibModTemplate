@@ -28,6 +28,9 @@
 
     <ItemGroup>
         <PackageReference Include="Krafs.Publicizer" Version="2.2.1" PrivateAssets="all"/>
+        <!-- 中文：Nothing.STS2RitsuLib.ModAnalyzers 是 AI 编写的辅助分析器，用于提示 RitsuLib Mod 模板中的常见 manifest 和资源问题。 -->
+        <!-- English: Nothing.STS2RitsuLib.ModAnalyzers is an AI-written helper analyzer for common RitsuLib mod template manifest and resource issues. -->
+        <PackageReference Include="Nothing.STS2RitsuLib.ModAnalyzers" Version="*"/>
         <!--
           三个 RitsuLib 包一次只能启用一个。默认主线包面向 STS2 0.105.0+，并跟踪 NuGet 最新版本。
           Only enable one RitsuLib package at a time. The default mainline package targets STS2 0.105.0+
@@ -47,7 +50,7 @@
           matching game branch; they do not restore every old API.
         -->
         <!--<PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="*" />-->
-    
+
     </ItemGroup>
 
     <ItemGroup>
