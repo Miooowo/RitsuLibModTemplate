@@ -5,7 +5,7 @@ namespace RitsuLibModTemplate.Characters;
 
 public sealed class RitsuLibModTemplatePotionPool : TypeListPotionPoolModel
 {
-    public override string EnergyColorName => "template";
+    public override string EnergyColorName => "RitsuLibModTemplate";
     public override Color LabOutlineColor => RitsuLibModTemplateCharacter.ThemeColor;
 
     // 即使模板暂时没有示例药水，也先把角色药水池结构留好。

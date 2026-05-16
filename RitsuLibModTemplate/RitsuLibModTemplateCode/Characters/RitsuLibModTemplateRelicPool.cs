@@ -5,7 +5,7 @@ namespace RitsuLibModTemplate.Characters;
 
 public sealed class RitsuLibModTemplateRelicPool : TypeListRelicPoolModel
 {
-    public override string EnergyColorName => "template";
+    public override string EnergyColorName => "RitsuLibModTemplate";
     public override Color LabOutlineColor => RitsuLibModTemplateCharacter.ThemeColor;
 
     // 遗物实验室和文本也会读取池子的能量图标路径。
