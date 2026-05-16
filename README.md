@@ -21,6 +21,8 @@
 <PackageReference Include="STS2.RitsuLib" Version="*" />
 ```
 
+这里的 `Version="*"` 只表示编译时 NuGet 包可以解析到当前可用版本；真正随 Mod 分发并由游戏加载器检查的是 manifest 里的 `dependencies`。发布前，请确认 `RitsuLibModTemplate.json` 里的 `STS2-RitsuLib` 版本与实际编译、测试的 RitsuLib 版本一致。若想保守地锁运行时下限，可以继续把 manifest 写成最低支持版本，但 README 或发布说明中要明确这是运行时下限，不是当前编译使用的精确版本。
+
 项目还默认引用 `Nothing.STS2RitsuLib.ModAnalyzers`。这是一个 AI 编写的辅助分析器，用于在开发时提示 RitsuLib Mod 模板中常见的 manifest 和资源配置问题。
 
 三个 RitsuLib 包一次只能启用一个。如果仍针对 STS2 `0.104.0` 的代码构建，请注释主线包并启用 `0.104.0` 兼容包：
@@ -49,7 +51,7 @@
 
 - 一个 `[ModInitializer]` 入口。
 - 一个最小自定义角色、角色卡池、遗物池和药水池。
-- 四张初始打击、一张初始防御和一个初始遗物示例。
+- 四张初始打击、四张初始防御和一个初始遗物示例。
 - 最小 Godot 静态占位场景，用于角色战斗模型、能量表盘、角色选择背景、商店和火堆。
 - 从原版资源复制并改成模板命名的占位 PNG，复制模板后可以直接替换。
 - 中英文基础本地化文件。
@@ -116,6 +118,8 @@ RitsuLibModTemplate/
 ```
 
 复制模板后，`id` 仍需要和 `Entry.ModId` 保持一致；`dependencies` 现在是数组，每个依赖项使用 `id` 和 `version` 声明，不再使用旧的单对象 `min_version` 写法。
+
+模板当前示例声明 `STS2-RitsuLib` 为 `0.2.29`。如果 `.csproj` 中的 `PackageReference` 使用 `Version="*"` 解析到了更新版本，或你手动升级了 RitsuLib 包，发布前请同步检查 manifest；它应该等于实际使用、测试的版本，或明确作为最低运行时依赖下限。
 
 ## 配置本机路径
 

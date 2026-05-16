@@ -20,6 +20,8 @@ The template uses mainline RitsuLib by default and keeps the latest available Nu
 <PackageReference Include="STS2.RitsuLib" Version="*" />
 ```
 
+Here, `Version="*"` only lets NuGet resolve the compile-time package to the currently available version. The manifest `dependencies` entry is what ships with the mod and what the game loader checks at runtime. Before publishing, keep the `STS2-RitsuLib` version in `RitsuLibModTemplate.json` aligned with the RitsuLib version you actually build and test against. If you intentionally keep the manifest conservative as a runtime floor, document that it is a minimum supported version, not the exact compile-time package.
+
 The project also references `Nothing.STS2RitsuLib.ModAnalyzers` by default. This is an AI-written helper analyzer that reports common manifest and resource configuration issues in RitsuLib mod templates during development.
 
 Only enable one RitsuLib package at a time. If your code still targets STS2 `0.104.0`, comment out the mainline package and enable the `0.104.0` compatibility package:
@@ -48,7 +50,7 @@ The template includes:
 
 - A `[ModInitializer]` entry point.
 - A minimal custom character, card pool, relic pool, and potion pool.
-- Four starter strikes, one starter defend, and one starter relic sample.
+- Four starter strikes, four starter defends, and one starter relic sample.
 - Minimal static Godot placeholder scenes for the combat character, energy counter, character select background, merchant, and rest site.
 - Placeholder PNG files copied from vanilla resources and renamed for the template. You can replace them after copying the template.
 - Basic English and Simplified Chinese localization files.
@@ -115,6 +117,8 @@ RitsuLibModTemplate/
 ```
 
 After copying the template, keep `id` aligned with `Entry.ModId`. `dependencies` is now an array, and each dependency uses `id` and `version`; the old single-object `min_version` format is no longer used.
+
+The current template example declares `STS2-RitsuLib` as `0.2.29`. If the `.csproj` `PackageReference` uses `Version="*"` and resolves a newer version, or if you manually upgrade the RitsuLib package, re-check the manifest before publishing. It should either match the version you actually build and test with, or be explicitly documented as the minimum runtime dependency.
 
 ## Local Path Configuration
 
