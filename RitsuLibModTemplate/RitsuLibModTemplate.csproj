@@ -28,29 +28,9 @@
 
     <ItemGroup>
         <PackageReference Include="Krafs.Publicizer" Version="2.2.1" PrivateAssets="all"/>
-        <!-- 中文：Nothing.STS2RitsuLib.ModAnalyzers 是 AI 编写的辅助分析器，用于提示 RitsuLib Mod 模板中的常见 manifest 和资源问题。 -->
-        <!-- English: Nothing.STS2RitsuLib.ModAnalyzers is an AI-written helper analyzer for common RitsuLib mod template manifest and resource issues. -->
         <PackageReference Include="Nothing.STS2RitsuLib.ModAnalyzers" Version="*"/>
-        <!--
-          三个 RitsuLib 包一次只能启用一个。默认主线包面向 STS2 0.105.0+，并跟踪 NuGet 最新版本。
-          Only enable one RitsuLib package at a time. The default mainline package targets STS2 0.105.0+
-          and tracks the latest NuGet version.
-        -->
+        <!-- 主线 RitsuLib（STS2 0.105.0+），跟踪 NuGet 最新版本。兼容分支和 manifest 版本对齐规则见 README。 -->
         <PackageReference Include="STS2.RitsuLib" Version="*"/>
-        <!--
-          STS2 0.104.0 现在是兼容分支。仍针对 0.104.0 的代码请注释上方主线包，并启用这个包。
-          STS2 0.104.0 is now a compatibility branch. If your code still targets 0.104.0, comment out
-          the mainline package above and enable this package.
-        -->
-        <!--<PackageReference Include="STS2.RitsuLib.Compat.0.104.0" Version="*" />-->
-
-        <!--
-          STS2 0.103.2 和 0.104.0 一样是兼容分支。兼容包只选择对应游戏分支，不会恢复所有旧 API。
-          STS2 0.103.2 is also a compatibility branch like 0.104.0. Compatibility packages select the
-          matching game branch; they do not restore every old API.
-        -->
-        <!--<PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="*" />-->
-
     </ItemGroup>
 
     <ItemGroup>

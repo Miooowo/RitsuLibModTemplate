@@ -48,6 +48,12 @@ Rider runs `dotnet new ritsulibmod -n <Solution name>` under the hood, matching 
 
 ## RitsuLib Version Selection and Compatibility
 
+### Current Version Snapshot (As of 2026-05-22)
+
+- Current game version: `0.106.0`
+- Current RitsuLib version: `0.3.0`
+- The template's `RitsuLibModTemplate.json` (both `min_game_version` and `dependencies[STS2-RitsuLib].version`) is aligned with these two versions. Re-verify against the versions you actually build and test with before publishing — see the checklist below.
+
 The template uses mainline RitsuLib by default and keeps the latest available NuGet version in the `.csproj`. The maintained mainline now targets STS2 `0.105.0` and newer:
 
 ```xml
@@ -106,23 +112,61 @@ RitsuLibModTemplate/
 
 ## Manifest Format
 
-`RitsuLibModTemplate.json` uses the new dependency declaration format:
+`RitsuLibModTemplate.json` is the mod manifest. The game loader reads it at startup to identify the mod, check dependencies, and decide whether to load it. The full schema:
 
 ```json
 {
-  "min_game_version": "0.105.1",
+  "id": "RitsuLibModTemplate",
+  "name": "RitsuLibModTemplate",
+  "pck_name": "RitsuLibModTemplate",
+  "author": "Author",
+  "description": "A starter Slay the Spire 2 mod template built on RitsuLib.",
+  "version": "0.0.0",
+  "has_pck": true,
+  "has_dll": true,
+  "affects_gameplay": true,
+  "min_game_version": "0.106.0",
   "dependencies": [
     {
       "id": "STS2-RitsuLib",
-      "version": "0.2.29"
+      "version": "0.3.0"
     }
   ]
 }
 ```
 
-After copying the template, keep `id` aligned with `Entry.ModId`. `dependencies` is now an array, and each dependency uses `id` and `version`; the old single-object `min_version` format is no longer used.
+### Field reference
 
-The current template example declares `STS2-RitsuLib` as `0.2.29`. If the `.csproj` `PackageReference` uses `Version="*"` and resolves a newer version, or if you manually upgrade the RitsuLib package, re-check the manifest before publishing. It should either match the version you actually build and test with, or be explicitly documented as the minimum runtime dependency.
+| Field | Type | Description |
+|---|---|---|
+| `id` | string | Unique mod identifier. **Must match `Entry.ModId` exactly**, and should also match the `mods/<id>` directory name. In-game dependency lookups, localization key prefixes, and resource paths all depend on this value. When renaming, update every place that uses `ModId`. |
+| `name` | string | Display name shown in the mod list. May contain spaces and non-ASCII characters. |
+| `pck_name` | string | Name of the `.pck` file the game must load (without extension). **Must match the actual PCK file produced by `.csproj`**, otherwise resources will not load even with `has_pck=true`. In the template it equals `MSBuildProjectName`. |
+| `author` | string | Display-only author name. No validation. |
+| `description` | string | Short description shown in the mod list. |
+| `version` | string | Version of this mod itself. SemVer-style `MAJOR.MINOR.PATCH` is recommended. Bump it on every release. |
+| `has_pck` | bool | Whether the mod ships a `.pck` resource pack. Template default `true`; code-only mods can set `false` and skip `ExportPCK`. |
+| `has_dll` | bool | Whether the mod ships a `.dll`. Template default `true`; resource-only mods can set `false`. |
+| `affects_gameplay` | bool | Whether the mod affects gameplay. When enabled, the game flags relevant systems (saves, achievements, etc.). Only purely cosmetic / localization mods that cannot change combat outcomes should set this to `false`. |
+| `min_game_version` | string | Minimum compatible STS2 game version. Older games refuse to load the mod. **Must align with the game branch targeted by the RitsuLib package selected in `.csproj`** (mainline ≥ `0.105.0`, compatibility branches `0.104.0` / `0.103.2`). |
+| `dependencies` | array | Other mods this mod depends on. Each entry uses `id` + `version`. **The legacy single-object `min_version` form is no longer supported.** |
+| `dependencies[].id` | string | The depended-on mod's `id`. RitsuLib itself uses `STS2-RitsuLib`. |
+| `dependencies[].version` | string | The depended-on mod's version, used as the minimum runtime version. The game loader compares it against the installed version and refuses to load if the installed copy is older. |
+
+### **Important: the RitsuLib version in `dependencies` must match the RitsuLib version your `.csproj` actually compiles against**
+
+This is the single most common pre-release mistake — please double-check it.
+
+- `PackageReference Include="STS2.RitsuLib" Version="*"` in `.csproj` only controls **compile-time** NuGet resolution; `*` resolves to whatever the latest version was at restore time.
+- `dependencies[STS2-RitsuLib].version` in `RitsuLibModTemplate.json` controls **the runtime version requirement** the game loader sees, and it ships with the mod.
+- The two are **independent and never auto-synced.** If you build against a new RitsuLib but forget to bump the manifest, players with an old RitsuLib will pass the manifest check and then crash at runtime due to missing APIs or signature drift. Conversely, an over-tight manifest version will reject players who could otherwise have run the mod.
+- The fixed pre-release checklist:
+  1. Confirm the actual `STS2.RitsuLib` version that `dotnet restore` resolved (look in `obj/project.assets.json` or your IDE's NuGet view).
+  2. Write that version into `dependencies[STS2-RitsuLib].version` in `RitsuLibModTemplate.json`.
+  3. When you switch to a compatibility package (`STS2.RitsuLib.Compat.0.104.0` / `Compat.0.103.2`), also adjust `min_game_version` to the corresponding branch. Keep the `dependencies` entry's `id` as `STS2-RitsuLib` (compatibility packages expose the same mod id to the loader).
+- If you intentionally want the manifest version to act as a **runtime floor** rather than the compile-time version (for example, declaring "`0.3.0+` works"), document this clearly in your README or release notes and verify that the mod still runs against the declared floor.
+
+The current template example declares `STS2-RitsuLib` as `0.3.0`. After copying the template, run through the checklist above before publishing.
 
 ## Local Path Configuration
 

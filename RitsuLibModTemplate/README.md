@@ -15,6 +15,12 @@
 
 ## RitsuLib 版本选择和兼容性
 
+### 当前版本快照（截至 2026-05-22）
+
+- 游戏当前版本：`0.106.0`
+- RitsuLib 当前版本：`0.3.0`
+- 模板的 `RitsuLibModTemplate.json`（`min_game_version` 与 `dependencies[STS2-RitsuLib].version`）已对齐到这两个版本。复制模板后再发布时，请按下文 checklist 重新校对你实际编译/测试的版本。
+
 模板默认使用主线 RitsuLib，并在 `.csproj` 中保留最新可用版本配置。主线维护版本现在是 STS2 `0.105.0` 及以上：
 
 ```xml
@@ -103,23 +109,61 @@ RitsuLibModTemplate/
 
 ## Manifest 格式
 
-`RitsuLibModTemplate.json` 使用新的依赖声明格式：
+`RitsuLibModTemplate.json` 是 Mod 的清单文件，游戏加载器在启动时会读取它来识别 Mod、检查依赖并决定是否加载。完整字段如下：
 
 ```json
 {
-  "min_game_version": "0.105.1",
+  "id": "RitsuLibModTemplate",
+  "name": "RitsuLibModTemplate",
+  "pck_name": "RitsuLibModTemplate",
+  "author": "Author",
+  "description": "A starter Slay the Spire 2 mod template built on RitsuLib.",
+  "version": "0.0.0",
+  "has_pck": true,
+  "has_dll": true,
+  "affects_gameplay": true,
+  "min_game_version": "0.106.0",
   "dependencies": [
     {
       "id": "STS2-RitsuLib",
-      "version": "0.2.29"
+      "version": "0.3.0"
     }
   ]
 }
 ```
 
-复制模板后，`id` 仍需要和 `Entry.ModId` 保持一致；`dependencies` 现在是数组，每个依赖项使用 `id` 和 `version` 声明，不再使用旧的单对象 `min_version` 写法。
+### 字段说明
 
-模板当前示例声明 `STS2-RitsuLib` 为 `0.2.29`。如果 `.csproj` 中的 `PackageReference` 使用 `Version="*"` 解析到了更新版本，或你手动升级了 RitsuLib 包，发布前请同步检查 manifest；它应该等于实际使用、测试的版本，或明确作为最低运行时依赖下限。
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `id` | string | Mod 的唯一标识符。**必须和 `Entry.ModId` 保持完全一致**，也建议与 `mods/<id>` 目录名一致。游戏内的依赖、本地化前缀和资源路径都依赖这个值。改名时所有用到 `ModId` 的地方都要同步。 |
+| `name` | string | 在 Mod 列表中显示的名称，可包含空格和中文。 |
+| `pck_name` | string | 游戏要加载的 `.pck` 文件名（不含扩展名）。**必须与 `.csproj` 实际导出的 PCK 文件名一致**，否则即使 `has_pck=true` 也加载不到资源。模板里和 `MSBuildProjectName` 同名。 |
+| `author` | string | 作者名，显示用，无强校验。 |
+| `description` | string | Mod 简介，显示在 Mod 列表里。 |
+| `version` | string | 当前 Mod 自身的版本号，建议使用 `主.次.修` 形式（SemVer）。每次发布前更新。 |
+| `has_pck` | bool | 是否随 Mod 分发 `.pck` 资源包。模板默认为 `true`；纯代码 Mod 可置为 `false` 并跳过 `ExportPCK`。 |
+| `has_dll` | bool | 是否随 Mod 分发 `.dll`。模板默认为 `true`；纯资源 Mod 可置为 `false`。 |
+| `affects_gameplay` | bool | 是否影响游戏玩法。开启后，游戏会在存档、成就等场景做相应标记。仅纯视觉/本地化等不会改变战斗结果的 Mod 可设为 `false`。 |
+| `min_game_version` | string | 此 Mod 兼容的最低 STS2 游戏版本。低于该版本的游戏会拒绝加载。**应与 `.csproj` 中选用的 RitsuLib 包面向的游戏分支匹配**（主线包 ≥ `0.105.0`，兼容包 `0.104.0` / `0.103.2`）。 |
+| `dependencies` | array | 此 Mod 依赖的其他 Mod 列表。数组形式，每项使用 `id` + `version` 声明。**旧版的单对象 `min_version` 写法不再支持。** |
+| `dependencies[].id` | string | 被依赖 Mod 的 `id`。RitsuLib 框架本身的 id 是 `STS2-RitsuLib`。 |
+| `dependencies[].version` | string | 被依赖 Mod 的版本号，作为运行时最低兼容下限。游戏加载器会用它对照已安装版本，低于则拒绝加载。 |
+
+### **重要：`dependencies` 里的 RitsuLib 版本必须与 `.csproj` 当前使用的 RitsuLib 版本一致**
+
+这是发布前最容易踩坑的一项，请务必检查。
+
+- `.csproj` 中 `PackageReference Include="STS2.RitsuLib" Version="*"` 只控制**编译时**拉取哪个 NuGet 包；`*` 会在 restore 时解析到当时的最新版本。
+- `RitsuLibModTemplate.json` 中的 `dependencies[STS2-RitsuLib].version` 控制**运行时**游戏加载器看到的版本要求，它会随 Mod 一起分发。
+- 两者**互相独立、不会自动同步**。如果你编译时用了新版 RitsuLib，却忘了升级 manifest 里的版本，玩家装了旧版 RitsuLib 也能通过 manifest 校验，但运行时会因为 API 缺失或签名变化崩掉。反之，manifest 写得过新会让本来能跑的玩家被错误拒绝。
+- 发布前的固定动作：
+  1. 在 IDE 或终端确认 `dotnet restore` 实际拉到的 `STS2.RitsuLib` 版本（查看 `obj/project.assets.json`，或 NuGet 包管理器中的版本号）。
+  2. 把该版本号填入 `RitsuLibModTemplate.json` 的 `dependencies[STS2-RitsuLib].version`。
+  3. 切换到兼容包（`STS2.RitsuLib.Compat.0.104.0` / `Compat.0.103.2`）时，同步把 `min_game_version` 调整到对应分支，并保持 `dependencies` 里的 `id` 仍为 `STS2-RitsuLib`（兼容包对外暴露的 mod id 不变）。
+- 若你确实想把 manifest 里的版本写成"最低运行时下限"而非编译版本（例如声明 `0.3.0+` 都可用），请在 README 或发布说明里明确这是运行时下限，并自行测试过下限版本下 Mod 仍能跑通。
+
+模板当前示例声明 `STS2-RitsuLib` 为 `0.3.0`。复制模板后，请按上述步骤校对，再发布。
 
 ## 配置本机路径
 
