@@ -4,6 +4,39 @@
 
 这是一个可复制、可构建的 RitsuLib Mod 模板，保留通用 Godot/C# 工程结构、示例内容和静态占位资源。
 
+## 使用 NuGet 模板
+
+### 命令行安装与创建
+
+安装模板：
+
+```powershell
+dotnet new install STS2.RitsuLib.ModTemplate
+```
+
+创建新 Mod：
+
+```powershell
+dotnet new ritsulibmod -n MyMod
+```
+
+这会生成名为 `MyMod` 的工程，并把模板中的 `RitsuLibModTemplate`、示例内容类名、示例资源文件名、资源目录、manifest 名称、namespace 和本地化 id 替换成新名称。
+
+卸载模板：
+
+```powershell
+dotnet new uninstall STS2.RitsuLib.ModTemplate
+```
+
+### 在 Rider 中创建项目
+
+完成一次 `dotnet new install STS2.RitsuLib.ModTemplate` 后，Rider 会自动识别这个模板，可以直接通过新建解决方案向导创建：
+
+1. 打开 Rider，选择 `File` → `New Solution`（或欢迎界面的 `New Solution`）。
+2. 在左侧模板列表向下滚动，在 `Custom Templates`（或 `More Templates`）分类中选择 `RitsuLib Mod Template`（短名 `ritsulibmod`）。
+3. 在右侧填入 `Solution name`（即新 Mod 名，例如 `MyMod`）和保存位置，点击 `Create`。
+
+Rider 会在背后调用 `dotnet new ritsulibmod -n <Solution name>` 完成模板替换，效果与命令行一致；也可以直接在 Rider 内置终端里运行相同的命令。如果模板没有出现在列表里，先确认 `dotnet new install` 成功，然后在 Rider 的 `New Solution` 对话框点击刷新或重启 Rider。
 
 ## RitsuLib 和教程
 
@@ -57,28 +90,6 @@
 - 中英文基础本地化文件。
 - Godot 项目、导出配置、manifest 和构建脚本。
 
-## 使用 NuGet 模板
-
-安装模板：
-
-```powershell
-dotnet new install STS2.RitsuLib.ModTemplate
-```
-
-创建新 Mod：
-
-```powershell
-dotnet new ritsulibmod -n MyMod
-```
-
-这会生成名为 `MyMod` 的工程，并把模板中的 `RitsuLibModTemplate`、示例内容类名、示例资源文件名、资源目录、manifest 名称、namespace 和本地化 id 替换成新名称。
-
-卸载模板：
-
-```powershell
-dotnet new uninstall STS2.RitsuLib.ModTemplate
-```
-
 ## 目录结构
 
 ```text
@@ -91,15 +102,7 @@ RitsuLibModTemplate/
 └── local.props.template
 ```
 
-## 手动复制模板
-
-1. 复制整个目录并改成你的 Mod 名称。
-2. 修改 `RitsuLibModTemplate.json` 里的 `id`、`name`、`author`、`description`。
-3. 修改 `RitsuLibModTemplateCode/Entry.cs` 里的 `ModId`。
-4. 如需彻底改名，同时修改 `.csproj`、`.sln`、`project.godot` 的项目名和命名空间。
-5. 把资源目录 `RitsuLibModTemplate/` 改成你的 `ModId`，并同步更新代码中的 `Entry.ResPath` 相关路径。
-
-`res://RitsuLibModTemplate/...` 是 Godot/PCK 内的资源路径，对应仓库里的 `RitsuLibModTemplate/` 资源目录，不是 C# namespace。
+`res://RitsuLibModTemplate/...` 是 Godot/PCK 内的资源路径，对应仓库里的 `RitsuLibModTemplate/` 资源目录，不是 C# namespace。通过 NuGet 模板创建项目时，这些目录名、文件名和 namespace 会按新 Mod 名同步替换。
 
 ## Manifest 格式
 

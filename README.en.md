@@ -4,6 +4,40 @@ Languages: [中文](README.md) | English
 
 RitsuLibModTemplate is a copyable and buildable RitsuLib mod template. It keeps a general Godot/C# project layout, sample content, and static placeholder assets.
 
+## Using the NuGet Template
+
+### Command Line Install and Create
+
+Install the template:
+
+```powershell
+dotnet new install STS2.RitsuLib.ModTemplate
+```
+
+Create a new mod:
+
+```powershell
+dotnet new ritsulibmod -n MyMod
+```
+
+This creates a project named `MyMod` and replaces `RitsuLibModTemplate`, sample content class names, sample resource file names, resource folders, manifest names, namespaces, and localization IDs with the new name.
+
+Uninstall the template:
+
+```powershell
+dotnet new uninstall STS2.RitsuLib.ModTemplate
+```
+
+### Creating a Project in Rider
+
+After running `dotnet new install STS2.RitsuLib.ModTemplate` once, Rider will pick up the template automatically and you can create a new project through its new solution wizard:
+
+1. Open Rider and choose `File` → `New Solution` (or `New Solution` from the welcome screen).
+2. Scroll down the template list on the left, then under `Custom Templates` (or `More Templates`) select `RitsuLib Mod Template` (short name `ritsulibmod`).
+3. Enter a `Solution name` (the new mod name, for example `MyMod`) and a location on the right, then click `Create`.
+
+Rider runs `dotnet new ritsulibmod -n <Solution name>` under the hood, matching the command-line behavior. You can also run the same command directly in Rider's built-in terminal. If the template does not appear in the list, confirm that `dotnet new install` succeeded and then refresh the `New Solution` dialog or restart Rider.
+
 ## RitsuLib and Tutorials
 
 - [STS2-RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib): the shared framework library for Slay the Spire 2 mods. This template uses it for content registration, character scaffolding, and Godot resource integration.
@@ -56,28 +90,6 @@ The template includes:
 - Basic English and Simplified Chinese localization files.
 - A Godot project, export preset, manifest, and build script.
 
-## Using the NuGet Template
-
-Install the template:
-
-```powershell
-dotnet new install STS2.RitsuLib.ModTemplate
-```
-
-Create a new mod:
-
-```powershell
-dotnet new ritsulibmod -n MyMod
-```
-
-This creates a project named `MyMod` and replaces `RitsuLibModTemplate`, sample content class names, sample resource file names, resource folders, manifest names, namespaces, and localization IDs with the new name.
-
-Uninstall the template:
-
-```powershell
-dotnet new uninstall STS2.RitsuLib.ModTemplate
-```
-
 ## Directory Layout
 
 ```text
@@ -90,15 +102,7 @@ RitsuLibModTemplate/
 └── local.props.template
 ```
 
-## Manual Copy
-
-1. Copy the whole directory and rename it to your mod name.
-2. Edit `RitsuLibModTemplate.json` and update `id`, `name`, `author`, and `description`.
-3. Edit `RitsuLibModTemplateCode/Entry.cs` and update `ModId`.
-4. For a full rename, also update the project name and namespace in `.csproj`, `.sln`, and `project.godot`.
-5. Rename the resource directory `RitsuLibModTemplate/` to your `ModId`, then update the related `Entry.ResPath` paths in code.
-
-`res://RitsuLibModTemplate/...` is the Godot/PCK resource path. It maps to the repository resource directory `RitsuLibModTemplate/`, not to the C# namespace.
+`res://RitsuLibModTemplate/...` is the Godot/PCK resource path. It maps to the repository resource directory `RitsuLibModTemplate/`, not to the C# namespace. When you create a project from the NuGet template, these directory names, file names, and namespaces are renamed consistently to match the new mod name.
 
 ## Manifest Format
 
