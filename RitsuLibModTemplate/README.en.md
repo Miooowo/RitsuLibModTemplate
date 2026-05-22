@@ -2,87 +2,163 @@
 
 Languages: [中文](README.md) | English
 
-RitsuLibModTemplate is a copyable and buildable RitsuLib mod template. It keeps a general Godot/C# project layout, sample content, and static placeholder assets.
+A copyable, buildable RitsuLib mod template providing a general Godot/C# project layout, sample content, and static placeholder assets.
 
-## RitsuLib and Tutorials
+**What the template includes:**
+
+- A `[ModInitializer]` entry point plus a minimal custom character (with character card pool, relic pool, and potion pool).
+- Four starter strikes, four starter defends, and one starter relic as samples.
+- Minimal static Godot placeholder scenes for the combat character, energy counter, character select background, merchant, and rest site.
+- Placeholder PNG files copied from vanilla resources and renamed for the template. Replace them after copying.
+- Basic English and Simplified Chinese localization files.
+- A complete Godot project, export preset, mod manifest, and MSBuild scripts.
+
+## Learning Resources
 
 - [STS2-RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib): the shared framework library for Slay the Spire 2 mods. This template uses it for content registration, character scaffolding, and Godot resource integration.
-- [RitsuLib tutorials on GitHub](https://github.com/GlitchedReme/SlayTheSpire2ModdingTutorials/tree/master/RitsuLib): useful for reading tutorials and examples by file.
-- [Slay the Spire 2 Modding Tutorials site](https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html): useful for browsing the full tutorial site.
-- Tutorial Wiki: [Chinese Home](https://github.com/alkaid616/RitsuLibModTemplate/wiki/Home) | [English Home](https://github.com/alkaid616/RitsuLibModTemplate/wiki/Home-EN)
-- This wiki is Rider-first: get the template running first, then learn how RitsuLib registers and builds content.
+- [RitsuLib Documentation](https://github.com/GlitchedReme/SlayTheSpire2ModdingTutorials/tree/master/RitsuLib): tutorials and examples by file.
+- [Slay the Spire 2 Modding Tutorials site](https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html): the full tutorial site.
+- Template Wiki (Rider-first): [Chinese Home](https://github.com/alkaid616/RitsuLibModTemplate/wiki/Home) | [English Home](https://github.com/alkaid616/RitsuLibModTemplate/wiki/Home-EN).
 
-## RitsuLib Version Selection and Compatibility
+## Install and Use
 
-### Current Version Snapshot (As of 2026-05-22)
+You can get this project two ways: via the NuGet template (automatic rename), or by copying the directory manually.
 
-- Current game version: `0.106.0`
-- Current RitsuLib version: `0.3.0`
-- The template's `RitsuLibModTemplate.json` (both `min_game_version` and `dependencies[STS2-RitsuLib].version`) is aligned with these two versions. Re-verify against the versions you actually build and test with before publishing — see the checklist below.
+### Option A: NuGet template (recommended)
 
-The template uses mainline RitsuLib by default and keeps the latest available NuGet version in the `.csproj`. The maintained mainline now targets STS2 `0.105.0` and newer:
+```powershell
+# Install the template
+dotnet new install STS2.RitsuLib.ModTemplate
+
+# Create a new mod
+dotnet new ritsulibmod -n MyMod
+
+# Uninstall the template
+dotnet new uninstall STS2.RitsuLib.ModTemplate
+```
+
+`dotnet new ritsulibmod -n MyMod` generates a project called `MyMod` and renames `RitsuLibModTemplate`, sample class names, sample resource file names, resource folders, manifest names, namespaces, and localization IDs to match the new name.
+
+### Option B: manual copy
+
+1. Copy the whole directory and rename it to your mod name.
+2. Edit `RitsuLibModTemplate.json` and update `id`, `name`, `author`, and `description`.
+3. Edit `RitsuLibModTemplateCode/Entry.cs` and update `ModId`.
+4. For a full rename, also update the project name and namespace in `.csproj`, `.sln`, and `project.godot`.
+5. Rename the resource directory `RitsuLibModTemplate/` to your `ModId`, then update the related `Entry.ResPath` paths in code.
+
+## Local Path Configuration
+
+```powershell
+Copy-Item .\local.props.template .\local.props
+```
+
+Set these values in `local.props` (the file is in `.gitignore`; do not commit it):
+
+| Field | Description |
+|---|---|
+| `Sts2Dir` | Slay the Spire 2 install directory |
+| `Sts2DataDir` | Game DLL directory, usually `$(Sts2Dir)/data_sts2_windows_x86_64` |
+| `GodotExe` | MegaDot/Godot executable used to export the PCK |
+| `RitsuLibDeployDir` | Local RitsuLib deployment directory, defaulting to `$(Sts2Dir)/mods/STS2-RitsuLib`. Used by RitsuLib package/build logic to copy RitsuLib into the game's mods directory — **not** this mod's output directory |
+
+## RitsuLib Version Compatibility
+
+> ⚠️ **Important: align the manifest's RitsuLib version with the csproj before release**
+>
+> `dependencies[STS2-RitsuLib].version` in `RitsuLibModTemplate.json` **must exactly match** the `STS2.RitsuLib` version your `.csproj` actually compiles against. The two are independent and **never auto-synced** — mismatches let players pass the manifest check and crash at runtime, or get wrongly rejected when their RitsuLib would have worked. See [Pre-release checklist: version alignment](#pre-release-checklist-version-alignment) below for the step-by-step procedure.
+
+### Current version snapshot (as of 2026-05-22)
+
+| Item | Value |
+|---|---|
+| Current STS2 game version | `0.106.0` |
+| Current RitsuLib version | `0.3.0` |
+| Template manifest status | `min_game_version` and `dependencies[STS2-RitsuLib].version` are aligned |
+
+### Version mapping
+
+The table summarizes the mainline STS2 target for each boundary RitsuLib release, sourced from the [STS2-RitsuLib Releases](https://github.com/BAKAOLC/STS2-RitsuLib/releases) page. Patch versions not listed follow the range they sit in; check the relevant release notes for boundary versions.
+
+| RitsuLib version | Mainline STS2 target | Compat packages |
+|---|---|---|
+| `v0.3.0+` (since 2026-05-22) | `0.106.0` | `0.103.2`; `0.104.0` compat removed |
+| `v0.2.29` ~ `v0.2.40` | `0.105.1` | `0.104.0`, `0.103.2` |
+| `v0.2.27` ~ `v0.2.28` | `0.105.0` | `0.104.0`, `0.103.2` |
+| `v0.2.0` ~ `v0.2.26` | `0.104.0` | `0.103.2` (experimental from `v0.2.6`); `0.99.1` compat removed in this range |
+| `v0.0.x` / `v0.1.x` | `0.99.1` and earlier | — |
+
+### Package selection: mainline and compat
+
+The template references mainline `STS2.RitsuLib` by default, tracking the latest NuGet version:
 
 ```xml
 <PackageReference Include="STS2.RitsuLib" Version="*" />
 ```
 
-Here, `Version="*"` only lets NuGet resolve the compile-time package to the currently available version. The manifest `dependencies` entry is what ships with the mod and what the game loader checks at runtime. Before publishing, keep the `STS2-RitsuLib` version in `RitsuLibModTemplate.json` aligned with the RitsuLib version you actually build and test against. If you intentionally keep the manifest conservative as a runtime floor, document that it is a minimum supported version, not the exact compile-time package.
-
-The project also references `Nothing.STS2RitsuLib.ModAnalyzers` by default. This is an AI-written helper analyzer that reports common manifest and resource configuration issues in RitsuLib mod templates during development.
-
-Only enable one RitsuLib package at a time. If your code still targets STS2 `0.104.0`, comment out the mainline package and enable the `0.104.0` compatibility package:
+**Only enable one RitsuLib package at a time.** If your code still targets an older branch, comment out the mainline and enable the matching compat package:
 
 ```xml
+<!-- STS2 0.104.0 compatibility branch (no longer maintained since v0.3.0) -->
 <PackageReference Include="STS2.RitsuLib.Compat.0.104.0" Version="*" />
-```
 
-If you need to build against STS2 `0.103.2`, enable the `0.103.2` compatibility package:
-
-```xml
+<!-- STS2 0.103.2 compatibility branch -->
 <PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="*" />
 ```
 
-STS2 `0.104.0` and `0.103.2` are both compatibility branches with the same maintenance level. Compatibility packages select the matching game branch; they do not restore every old API. Some older mods still need code changes and recompilation.
+Compatibility packages only select the matching game branch; they do not restore every old API. Some old mods still need code changes and recompilation.
 
-When upgrading to STS2 `0.105.0` / mainline RitsuLib, check these areas:
+The template also references `Nothing.STS2RitsuLib.ModAnalyzers` — an AI-written helper analyzer that reports common manifest and resource configuration issues during development.
 
-- Version conditional compilation now uses cumulative interval macros such as `STS2_AT_LEAST_<ver>`; the old single-target `STS2_V_<ver>` macros are no longer recommended.
-- AnyPlayer and AnyAny target logic changed, so old card targets, base constructor signatures, and registration flows should be checked against the new mainline API.
-- Cards now support extra icon count labels in the lower-right corner and include conflict handling with vanilla UI; custom UI or icon patches should verify display order and placement.
-- Retain/flush hooks and events have replacements, removals, or `[Obsolete]` markers; migrate old uses of `CardRetainedEvent`, `CardsFlushedEvent`, or legacy `Hook.*` entry points.
-- Badge, BadgeRuntimeTemplate, BadgePool.CreateAll, and ModBadgeTemplate constructor signatures changed with upstream APIs; old registered-mod death screen badge code may need updates to avoid `MissingMethodException`.
+### Pre-release checklist: version alignment
 
-The template includes:
+> **`PackageReference` in `.csproj` only controls compile-time resolution; `dependencies` in `RitsuLibModTemplate.json` is what the game loader checks at runtime. The two are independent and never auto-synced.**
 
-- A `[ModInitializer]` entry point.
-- A minimal custom character, card pool, relic pool, and potion pool.
-- Four starter strikes, four starter defends, and one starter relic sample.
-- Minimal static Godot placeholder scenes for the combat character, energy counter, character select background, merchant, and rest site.
-- Placeholder PNG files copied from vanilla resources and renamed for the template. You can replace them after copying the template.
-- Basic English and Simplified Chinese localization files.
-- A Godot project, export preset, manifest, and build script.
+If you compile against a new RitsuLib but forget to bump the manifest, players with an old RitsuLib will pass the manifest check and crash at runtime due to missing APIs or signature drift. Conversely, an over-tight manifest will reject players who could otherwise run the mod.
 
-## Using the NuGet Template
+Before every release:
 
-Install the template:
+1. Confirm the actual `STS2.RitsuLib` version `dotnet restore` resolved (look in `obj/project.assets.json` or your IDE's NuGet view).
+2. Write that version into `dependencies[STS2-RitsuLib].version` in `RitsuLibModTemplate.json`.
+3. When you switch to a compatibility package (`Compat.0.104.0` / `Compat.0.103.2`), also adjust `min_game_version` to the matching branch. Keep `dependencies[].id` as `STS2-RitsuLib` (compatibility packages expose the same mod id to the loader).
+4. If you intentionally want the manifest version to act as a **runtime floor** (e.g. declaring "`0.3.0+` works"), document this in your release notes and verify the mod runs against the declared floor.
 
-```powershell
-dotnet new install STS2.RitsuLib.ModTemplate
-```
+### Upgrade notes
 
-Create a new mod:
+#### Upgrading to RitsuLib `v0.3.0` / STS2 `0.106.0`
 
-```powershell
-dotnet new ritsulibmod -n MyMod
-```
+Major changes (from the [v0.3.0 release notes](https://github.com/BAKAOLC/STS2-RitsuLib/releases/tag/v0.3.0)):
 
-This creates a project named `MyMod` and replaces `RitsuLibModTemplate`, sample content class names, sample resource file names, resource folders, manifest names, namespaces, and localization IDs with the new name.
+- **Breaking**: `RunSidecar` removed, fully replaced by `RunSavedData`.
+- New `TargetType` registration capability for custom `TargetType`s.
+- Loader target detection strengthened: branch version files now use hash verification, and mismatched versions are discarded.
+- `0.104.0` compatibility removed.
 
-Uninstall the template:
+#### Upgrading to RitsuLib `v0.2.27` / STS2 `0.105.0` (historical)
 
-```powershell
-dotnet new uninstall STS2.RitsuLib.ModTemplate
-```
+When migrating from an earlier branch (`v0.2.0` ~ `v0.2.26` / STS2 `0.104.0`), check the following:
+
+- Version conditional compilation switched to cumulative interval macros `STS2_AT_LEAST_<ver>`; legacy `STS2_V_<ver>` macros are no longer recommended.
+- AnyPlayer / AnyAny targeting logic changed; legacy card targets, base constructor signatures, and registration flows should be checked against the new API.
+- Cards support extra icon count labels in the lower-right corner with vanilla UI conflict handling; verify display order and placement for custom UI / icon patches.
+- Retain / flush hooks and events have replacements, removals, or `[Obsolete]` markers; migrate legacy uses of `CardRetainedEvent`, `CardsFlushedEvent`, or legacy `Hook.*` entry points.
+- `Badge`, `BadgeRuntimeTemplate`, `BadgePool.CreateAll`, and `ModBadgeTemplate` constructor signatures changed; legacy code may need updates to avoid `MissingMethodException`.
+
+## Build
+
+| Command | Behavior |
+|---|---|
+| `dotnet build .\RitsuLibModTemplate.csproj` | Full build: compile + `CopyMod` + `ExportPCK` |
+| `... /p:RunPckExport=false` | Skip PCK export (no `GodotExe` needed) |
+| `... /p:CopyModOnBuild=false` | Skip copying to the game's mods directory (output stays in `bin/`) |
+| `... /p:RunPckExport=false /p:CopyModOnBuild=false` | C# compile validation only |
+
+A full build runs two MSBuild targets after `Build`:
+
+- **`CopyMod`**: copies the DLL and manifest to the game's `mods/RitsuLibModTemplate` directory.
+- **`ExportPCK`**: calls `GodotExe` and exports the PCK to the same mod directory.
+
+> `RitsuLibDeployDir` only controls where the RitsuLib framework itself is deployed locally. This mod's DLL, manifest, and PCK are controlled by `ModOutputDir` (default `$(Sts2Dir)/mods/$(MSBuildProjectName)`).
 
 ## Directory Layout
 
@@ -91,24 +167,55 @@ RitsuLibModTemplate/
 ├── RitsuLibModTemplateCode/   # C# source
 ├── RitsuLibModTemplate/       # Godot resources, localization, and placeholder scenes
 ├── RitsuLibModTemplate.csproj
-├── RitsuLibModTemplate.json
+├── RitsuLibModTemplate.json   # Mod manifest
 ├── project.godot
 └── local.props.template
 ```
 
-## Manual Copy
+`res://RitsuLibModTemplate/...` is the Godot/PCK resource path, mapping to the repository resource directory `RitsuLibModTemplate/`, **not** to the C# namespace. When you create a project from the NuGet template, these directory names, file names, and namespaces are renamed consistently to match the new mod name.
 
-1. Copy the whole directory and rename it to your mod name.
-2. Edit `RitsuLibModTemplate.json` and update `id`, `name`, `author`, and `description`.
-3. Edit `RitsuLibModTemplateCode/Entry.cs` and update `ModId`.
-4. For a full rename, also update the project name and namespace in `.csproj`, `.sln`, and `project.godot`.
-5. Rename the resource directory `RitsuLibModTemplate/` to your `ModId`, then update the related `Entry.ResPath` paths in code.
+## Template Contents
 
-`res://RitsuLibModTemplate/...` is the Godot/PCK resource path. It maps to the repository resource directory `RitsuLibModTemplate/`, not to the C# namespace.
+### Sample character
+
+| Property | Value |
+|---|---|
+| Type | `RitsuLibModTemplateCharacter` |
+| Expected ID | `RITSU_LIB_MOD_TEMPLATE_CHARACTER_RITSU_LIB_MOD_TEMPLATE_CHARACTER` |
+| Starter deck | 4 × `RitsuLibModTemplateStrike`, 4 × `RitsuLibModTemplateDefend`, 1 × `RitsuLibModTemplateRelic` |
+| Assets | Configured via `CharacterAssetProfile`. The template only specifies static placeholder assets; unspecified audio, trail, transition, etc. fall back through `PlaceholderCharacterId` |
+
+### Sample cards and relic
+
+| Type | Pool | Expected ID |
+|---|---|---|
+| `RitsuLibModTemplateStrike` (attack) | character card pool | `RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_STRIKE` |
+| `RitsuLibModTemplateDefend` (skill) | character card pool | `RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_DEFEND` |
+| `RitsuLibModTemplateRelic` | `RitsuLibModTemplateRelicPool` | `RITSU_LIB_MOD_TEMPLATE_RELIC_RITSU_LIB_MOD_TEMPLATE_RELIC` |
+
+### Static placeholder assets
+
+**Images** (`res://RitsuLibModTemplate/images/...`):
+
+- `cards/RitsuLibModTemplateStrike.png`, `cards/RitsuLibModTemplateDefend.png`: sample card art.
+- `relics/RitsuLibModTemplateRelic.png`: sample relic icon.
+- `characters/RitsuLibModTemplate_character_*.png`: character icons, select art, map marker, and energy icons.
+
+**Scenes** (`res://RitsuLibModTemplate/scenes/characters/...`):
+
+| Scene | Purpose | Placeholder structure |
+|---|---|---|
+| `RitsuLibModTemplate_character.tscn` | Combat character | `%Visuals`, `%Bounds`, `%IntentPos`, `%CenterPos`, `%TalkPos` |
+| `RitsuLibModTemplate_energy_counter.tscn` | Energy counter | `%EnergyVfxBack`, `%Layers`, `%RotationLayers`, `%EnergyVfxFront`, `Label` |
+| `RitsuLibModTemplate_merchant.tscn` | Merchant | — |
+| `RitsuLibModTemplate_rest_site.tscn` | Rest site | `%ControlRoot`, `%SelectionReticle`, `%Hitbox`, `%ThoughtBubbleRight`, `%ThoughtBubbleLeft` |
+| `RitsuLibModTemplate_character_select_bg.tscn` | Character select background | — |
+
+These resources only exist to make the template visible and replaceable; they do not try to reproduce vanilla animation quality. After copying the template, replace them with your own assets. If you change paths, update the corresponding `AssetProfile` fields.
 
 ## Manifest Format
 
-`RitsuLibModTemplate.json` is the mod manifest. The game loader reads it at startup to identify the mod, check dependencies, and decide whether to load it. The full schema:
+`RitsuLibModTemplate.json` is the mod manifest. The game loader reads it at startup to identify the mod, check dependencies, and decide whether to load. Full example:
 
 ```json
 {
@@ -123,10 +230,7 @@ RitsuLibModTemplate/
   "affects_gameplay": true,
   "min_game_version": "0.106.0",
   "dependencies": [
-    {
-      "id": "STS2-RitsuLib",
-      "version": "0.3.0"
-    }
+    { "id": "STS2-RitsuLib", "version": "0.3.0" }
   ]
 }
 ```
@@ -135,121 +239,23 @@ RitsuLibModTemplate/
 
 | Field | Type | Description |
 |---|---|---|
-| `id` | string | Unique mod identifier. **Must match `Entry.ModId` exactly**, and should also match the `mods/<id>` directory name. In-game dependency lookups, localization key prefixes, and resource paths all depend on this value. When renaming, update every place that uses `ModId`. |
-| `name` | string | Display name shown in the mod list. May contain spaces and non-ASCII characters. |
-| `pck_name` | string | Name of the `.pck` file the game must load (without extension). **Must match the actual PCK file produced by `.csproj`**, otherwise resources will not load even with `has_pck=true`. In the template it equals `MSBuildProjectName`. |
-| `author` | string | Display-only author name. No validation. |
-| `description` | string | Short description shown in the mod list. |
-| `version` | string | Version of this mod itself. SemVer-style `MAJOR.MINOR.PATCH` is recommended. Bump it on every release. |
-| `has_pck` | bool | Whether the mod ships a `.pck` resource pack. Template default `true`; code-only mods can set `false` and skip `ExportPCK`. |
-| `has_dll` | bool | Whether the mod ships a `.dll`. Template default `true`; resource-only mods can set `false`. |
-| `affects_gameplay` | bool | Whether the mod affects gameplay. When enabled, the game flags relevant systems (saves, achievements, etc.). Only purely cosmetic / localization mods that cannot change combat outcomes should set this to `false`. |
-| `min_game_version` | string | Minimum compatible STS2 game version. Older games refuse to load the mod. **Must align with the game branch targeted by the RitsuLib package selected in `.csproj`** (mainline ≥ `0.105.0`, compatibility branches `0.104.0` / `0.103.2`). |
-| `dependencies` | array | Other mods this mod depends on. Each entry uses `id` + `version`. **The legacy single-object `min_version` form is no longer supported.** |
-| `dependencies[].id` | string | The depended-on mod's `id`. RitsuLib itself uses `STS2-RitsuLib`. |
-| `dependencies[].version` | string | The depended-on mod's version, used as the minimum runtime version. The game loader compares it against the installed version and refuses to load if the installed copy is older. |
+| `id` | string | Unique mod identifier. **Must match `Entry.ModId` exactly**, and should also match the `mods/<id>` directory name. In-game dependency lookups, localization key prefixes, and resource paths all depend on this value |
+| `name` | string | Display name shown in the mod list. May contain spaces and non-ASCII characters |
+| `pck_name` | string | `.pck` file name (without extension). **Must match the actual PCK file produced by `.csproj`**, or resources will not load even with `has_pck=true` |
+| `author` | string | Display-only author name |
+| `description` | string | Short description shown in the mod list |
+| `version` | string | Version of this mod itself. SemVer (`MAJOR.MINOR.PATCH`) is recommended. Bump on every release |
+| `has_pck` | bool | Whether the mod ships a `.pck`. Code-only mods can set `false` and skip `ExportPCK` |
+| `has_dll` | bool | Whether the mod ships a `.dll`. Resource-only mods can set `false` |
+| `affects_gameplay` | bool | Whether the mod affects gameplay. When enabled, the game flags saves/achievements/etc.; only purely cosmetic / localization mods should set this to `false` |
+| `min_game_version` | string | Minimum compatible STS2 version. Older games refuse to load. **Must align with the game branch targeted by the RitsuLib package selected in `.csproj`** (see [RitsuLib Version Compatibility](#ritsulib-version-compatibility) above) |
+| `dependencies` | array | Dependency list. Each entry uses `id` + `version`. **The legacy single-object `min_version` form is no longer supported** |
+| `dependencies[].id` | string | The depended-on mod's `id`. RitsuLib itself uses `STS2-RitsuLib` |
+| `dependencies[].version` | string | Minimum runtime version of the dependency. **The `STS2-RitsuLib` value must exactly match the NuGet version your `.csproj` actually compiles against** — see [Pre-release checklist: version alignment](#pre-release-checklist-version-alignment) above |
 
-### **Important: the RitsuLib version in `dependencies` must match the RitsuLib version your `.csproj` actually compiles against**
+## Development Tips
 
-This is the single most common pre-release mistake — please double-check it.
-
-- `PackageReference Include="STS2.RitsuLib" Version="*"` in `.csproj` only controls **compile-time** NuGet resolution; `*` resolves to whatever the latest version was at restore time.
-- `dependencies[STS2-RitsuLib].version` in `RitsuLibModTemplate.json` controls **the runtime version requirement** the game loader sees, and it ships with the mod.
-- The two are **independent and never auto-synced.** If you build against a new RitsuLib but forget to bump the manifest, players with an old RitsuLib will pass the manifest check and then crash at runtime due to missing APIs or signature drift. Conversely, an over-tight manifest version will reject players who could otherwise have run the mod.
-- The fixed pre-release checklist:
-  1. Confirm the actual `STS2.RitsuLib` version that `dotnet restore` resolved (look in `obj/project.assets.json` or your IDE's NuGet view).
-  2. Write that version into `dependencies[STS2-RitsuLib].version` in `RitsuLibModTemplate.json`.
-  3. When you switch to a compatibility package (`STS2.RitsuLib.Compat.0.104.0` / `Compat.0.103.2`), also adjust `min_game_version` to the corresponding branch. Keep the `dependencies` entry's `id` as `STS2-RitsuLib` (compatibility packages expose the same mod id to the loader).
-- If you intentionally want the manifest version to act as a **runtime floor** rather than the compile-time version (for example, declaring "`0.3.0+` works"), document this clearly in your README or release notes and verify that the mod still runs against the declared floor.
-
-The current template example declares `STS2-RitsuLib` as `0.3.0`. After copying the template, run through the checklist above before publishing.
-
-## Local Path Configuration
-
-Copy:
-
-```powershell
-Copy-Item .\local.props.template .\local.props
-```
-
-Then set or override these values in `local.props`:
-
-- `Sts2Dir`: the Slay the Spire 2 install directory.
-- `Sts2DataDir`: the game DLL directory, usually `$(Sts2Dir)/data_sts2_windows_x86_64`.
-- `GodotExe`: the MegaDot/Godot executable used to export the PCK.
-- `RitsuLibDeployDir`: the local RitsuLib deployment directory, defaulting to `$(Sts2Dir)/mods/STS2-RitsuLib`. RitsuLib package/build logic uses it to copy RitsuLib into the game's mods directory; it is not this mod's output directory.
-
-`local.props` is already listed in `.gitignore`; do not commit it.
-
-## Build
-
-To validate only C# compilation and skip `CopyMod` and `ExportPCK`:
-
-```powershell
-dotnet build .\RitsuLibModTemplate.csproj /p:RunPckExport=false /p:CopyModOnBuild=false
-```
-
-A normal build runs two MSBuild targets after `Build`:
-
-- `CopyMod`: copies the DLL and manifest to the game's `mods/RitsuLibModTemplate` directory.
-- `ExportPCK`: calls `GodotExe` and exports the PCK to the same mod directory.
-
-`RitsuLibDeployDir` separately controls where the RitsuLib framework itself is deployed locally. This mod's DLL, manifest, and PCK are still controlled by `ModOutputDir`.
-
-```powershell
-dotnet build .\RitsuLibModTemplate.csproj
-```
-
-You can also skip only one target:
-
-```powershell
-dotnet build .\RitsuLibModTemplate.csproj /p:CopyModOnBuild=false
-dotnet build .\RitsuLibModTemplate.csproj /p:RunPckExport=false
-```
-
-After a successful full build, the DLL, manifest, and PCK are copied to the game's `mods/RitsuLibModTemplate` directory.
-
-## Sample Content
-
-Sample character:
-
-- Type: `RitsuLibModTemplateCharacter`
-- Expected ID: `RITSU_LIB_MOD_TEMPLATE_CHARACTER_RITSU_LIB_MOD_TEMPLATE_CHARACTER`
-- Starter deck: four `RitsuLibModTemplateStrike`, four `RitsuLibModTemplateDefend`, and one `RitsuLibModTemplateRelic`
-- Character assets are configured through `CharacterAssetProfile`. The template only specifies copied static placeholder assets; unspecified audio, trail, transition, and similar fields fall back through `PlaceholderCharacterId`.
-
-Sample cards:
-
-- `RitsuLibModTemplateStrike`: attack card, character card pool, expected ID `RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_STRIKE`
-- `RitsuLibModTemplateDefend`: skill card, character card pool, expected ID `RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_DEFEND`
-
-Sample relic:
-
-- Type: `RitsuLibModTemplateRelic`
-- Relic pool: `RitsuLibModTemplateRelicPool`
-- Expected ID: `RITSU_LIB_MOD_TEMPLATE_RELIC_RITSU_LIB_MOD_TEMPLATE_RELIC`
-
-## Static Placeholder Assets
-
-Built-in image resources are placed under `res://RitsuLibModTemplate/images/...`:
-
-- `images/cards/RitsuLibModTemplateStrike.png` and `images/cards/RitsuLibModTemplateDefend.png`: sample card art.
-- `images/relics/RitsuLibModTemplateRelic.png`: sample relic icon.
-- `images/characters/RitsuLibModTemplate_character_*.png`: character icons, select art, map marker, and energy icons.
-
-Built-in scene resources are placed under `res://RitsuLibModTemplate/scenes/characters/...`:
-
-- `RitsuLibModTemplate_character.tscn`: static combat character. Placeholder structure includes `%Visuals`, `%Bounds`, `%IntentPos`, `%CenterPos`, and `%TalkPos`.
-- `RitsuLibModTemplate_energy_counter.tscn`: static energy counter. Placeholder structure includes `%EnergyVfxBack`, `%Layers`, `%RotationLayers`, `%EnergyVfxFront`, and `Label`.
-- `RitsuLibModTemplate_merchant.tscn`: static merchant character.
-- `RitsuLibModTemplate_rest_site.tscn`: static rest site character. Placeholder structure includes `%ControlRoot`, `%SelectionReticle`, `%Hitbox`, `%ThoughtBubbleRight`, and `%ThoughtBubbleLeft`.
-- `RitsuLibModTemplate_character_select_bg.tscn`: character select background.
-
-These resources are only meant to make the template visible and replaceable. They do not try to reproduce vanilla animation quality. After copying the template, replace the PNG files or scenes with your own assets; if you change paths, update the related `AssetProfile` fields too.
-
-## Tutorial Tips
-
-- Prefer `AssetProfile` for new content. Only override legacy `Custom...Path` fields for individual compatibility cases.
+- Prefer `AssetProfile` for new content; only override legacy `Custom...Path` fields for individual compatibility cases.
 - If a character resource field is not specified, RitsuLib fills it from the vanilla character config referenced by `PlaceholderCharacterId`.
-- Resource paths should start with `res://`; make sure the directory name and casing inside the PCK are correct.
-- For `.tscn` files, make sure the scene is included in the mod resources. If it needs a script, prefer a local wrapper class and call `EnsureGodotScriptsRegistered(...)` from `Entry.Initialize()`.
+- Resource paths must start with `res://`; verify the directory name and casing inside the PCK are correct.
+- For `.tscn` files, make sure the scene is packed into the mod resources. If it needs a script, prefer a local wrapper class and call `EnsureGodotScriptsRegistered(...)` from `Entry.Initialize()`.

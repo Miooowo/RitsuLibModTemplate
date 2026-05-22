@@ -2,99 +2,163 @@
 
 语言 / Languages：中文 | [English](README.en.md)
 
-这是一个可复制、可构建的 RitsuLib Mod 模板，保留通用 Godot/C# 工程结构、示例内容和静态占位资源。
+一个可复制、可构建的 RitsuLib Mod 模板，提供通用的 Godot/C# 工程结构、示例内容和静态占位资源。
 
-## 使用 NuGet 模板
+**模板包含：**
 
-### 命令行安装与创建
+- 一个 `[ModInitializer]` 入口，外加最小自定义角色（含角色卡池、遗物池、药水池）。
+- 4 张初始打击、4 张初始防御和 1 个初始遗物示例。
+- 最小 Godot 静态占位场景：战斗模型、能量表盘、角色选择背景、商店和火堆。
+- 从原版资源复制并按模板命名的占位 PNG，复制模板后可直接替换。
+- 中英文基础本地化文件。
+- 完整的 Godot 项目、导出配置、Mod manifest 和 MSBuild 构建脚本。
 
-安装模板：
+## 学习资源
+
+- [STS2-RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib)：Slay the Spire 2 Mod 的共享框架库，本模板基于它提供内容注册、角色脚手架和 Godot 资源接入能力。
+- [RitsuLib 文档地址](https://github.com/GlitchedReme/SlayTheSpire2ModdingTutorials/tree/master/RitsuLib)：按文件阅读教程和示例。
+- [Slay the Spire 2 Modding Tutorials 网页版](https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html)：完整教程站点。
+- 模板 Wiki（以 Rider 为主线）：[中文首页](https://github.com/alkaid616/RitsuLibModTemplate/wiki/Home) | [English Home](https://github.com/alkaid616/RitsuLibModTemplate/wiki/Home-EN)。
+
+## 安装模板
+
+### 命令行安装
 
 ```powershell
+# 安装模板
 dotnet new install STS2.RitsuLib.ModTemplate
-```
 
-创建新 Mod：
-
-```powershell
+# 创建新 Mod
 dotnet new ritsulibmod -n MyMod
-```
 
-这会生成名为 `MyMod` 的工程，并把模板中的 `RitsuLibModTemplate`、示例内容类名、示例资源文件名、资源目录、manifest 名称、namespace 和本地化 id 替换成新名称。
-
-卸载模板：
-
-```powershell
+# 卸载模板
 dotnet new uninstall STS2.RitsuLib.ModTemplate
 ```
 
+`dotnet new ritsulibmod -n MyMod` 会生成名为 `MyMod` 的工程，并把模板中的 `RitsuLibModTemplate`、示例类名、资源文件名、资源目录、manifest 名称、namespace 和本地化 id 同步替换成新名称。
+
 ### 在 Rider 中创建项目
 
-完成一次 `dotnet new install STS2.RitsuLib.ModTemplate` 后，Rider 会自动识别这个模板，可以直接通过新建解决方案向导创建：
+完成一次 `dotnet new install STS2.RitsuLib.ModTemplate` 后，Rider 会自动识别该模板：
 
-1. 打开 Rider，选择 `File` → `New Solution`（或欢迎界面的 `New Solution`）。
-2. 在左侧模板列表向下滚动，在 `Custom Templates`（或 `More Templates`）分类中选择 `RitsuLib Mod Template`（短名 `ritsulibmod`）。
-3. 在右侧填入 `Solution name`（即新 Mod 名，例如 `MyMod`）和保存位置，点击 `Create`。
+1. `File` → `New Solution`（或欢迎界面的 `New Solution`）。
+2. 在左侧 `Custom Templates`（或 `More Templates`）分类中选择 `RitsuLib Mod Template`（短名 `ritsulibmod`）。
+3. 在右侧填入 `Solution name`（新 Mod 名，例如 `MyMod`）和保存位置，点击 `Create`。
 
-Rider 会在背后调用 `dotnet new ritsulibmod -n <Solution name>` 完成模板替换，效果与命令行一致；也可以直接在 Rider 内置终端里运行相同的命令。如果模板没有出现在列表里，先确认 `dotnet new install` 成功，然后在 Rider 的 `New Solution` 对话框点击刷新或重启 Rider。
+Rider 在背后调用 `dotnet new ritsulibmod -n <Solution name>`，行为与命令行完全一致。如果模板没出现在列表里，先确认 `dotnet new install` 成功，再在 Rider 的 `New Solution` 对话框中刷新或重启 Rider。
 
-## RitsuLib 和教程
+## 配置本机路径
 
-- [STS2-RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib)：Slay the Spire 2 Mod 的共享框架库，本模板基于它提供内容注册、角色脚手架和 Godot 资源接入能力。
-- [RitsuLib GitHub 教程目录](https://github.com/GlitchedReme/SlayTheSpire2ModdingTutorials/tree/master/RitsuLib)：适合按文件阅读教程和示例。
-- [Slay the Spire 2 Modding Tutorials 网页版](https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html)：适合浏览完整教程站点。
-- 教程 Wiki： [中文首页](https://github.com/alkaid616/RitsuLibModTemplate/wiki/Home) | [English Home](https://github.com/alkaid616/RitsuLibModTemplate/wiki/Home-EN)
-- 这套 Wiki 以 Rider 为主线，先跑通模板，再逐步理解 RitsuLib 的注册与内容模型。
+```powershell
+Copy-Item .\local.props.template .\local.props
+```
 
-## RitsuLib 版本选择和兼容性
+在 `local.props` 中设置以下值（文件已在 `.gitignore`，不要提交）：
+
+| 字段 | 说明 |
+|---|---|
+| `Sts2Dir` | Slay the Spire 2 安装目录 |
+| `Sts2DataDir` | 游戏 dll 目录，通常是 `$(Sts2Dir)/data_sts2_windows_x86_64` |
+| `GodotExe` | 用于导出 pck 的 MegaDot/Godot 可执行文件 |
+| `RitsuLibDeployDir` | RitsuLib 本机部署目录，默认 `$(Sts2Dir)/mods/STS2-RitsuLib`。这是 RitsuLib 包/构建逻辑把 RitsuLib 复制到游戏 mods 目录的位置，**不是当前 Mod 自身的输出目录** |
+
+## RitsuLib 版本兼容性
+
+> ⚠️ **重要：发布前请校对 manifest 与 csproj 版本对齐**
+>
+> `RitsuLibModTemplate.json` 中 `dependencies[STS2-RitsuLib].version` **必须**与 `.csproj` 里 `STS2.RitsuLib` 包实际编译使用的版本一致。两者互相独立、**不会自动同步**——不对齐会让玩家通过 manifest 校验后在运行时崩溃，或在 RitsuLib 已满足条件时被错误拒绝。详细步骤见下方 [发布前 checklist：版本对齐](#发布前-checklist版本对齐)。
 
 ### 当前版本快照（截至 2026-05-22）
 
-- 游戏当前版本：`0.106.0`
-- RitsuLib 当前版本：`0.3.0`
-- 模板的 `RitsuLibModTemplate.json`（`min_game_version` 与 `dependencies[STS2-RitsuLib].version`）已对齐到这两个版本。复制模板后再发布时，请按下文 checklist 重新校对你实际编译/测试的版本。
+| 项 | 值 |
+|---|---|
+| STS2 游戏当前版本 | `0.106.0` |
+| RitsuLib 当前版本 | `0.3.0` |
+| 模板 manifest 状态 | `min_game_version` 与 `dependencies[STS2-RitsuLib].version` 已对齐 |
 
-模板默认使用主线 RitsuLib，并在 `.csproj` 中保留最新可用版本配置。主线维护版本现在是 STS2 `0.105.0` 及以上：
+### 版本对应表
+
+下表汇总主要边界版本对应的 STS2 主要目标版本，整理自 [STS2-RitsuLib Releases](https://github.com/BAKAOLC/STS2-RitsuLib/releases) 的公告。未在表中显式列出的小版本沿用所在区间；遇到边界版本时以对应 release notes 为准。
+
+| RitsuLib 版本 | 主要目标 STS2 版本 | 兼容（Compat）包 |
+|---|---|---|
+| `v0.3.0+`（2026-05-22 起） | `0.106.0` | `0.103.2`；删除了 `0.104.0` 兼容支持 |
+| `v0.2.29` ~ `v0.2.40` | `0.105.1` | `0.104.0`、`0.103.2` |
+| `v0.2.27` ~ `v0.2.28` | `0.105.0` | `0.104.0`、`0.103.2` |
+| `v0.2.0` ~ `v0.2.26` | `0.104.0` | 自 `v0.2.6` 起实验性提供 `0.103.2`；同步移除 `0.99.1` 兼容 |
+| `v0.0.x` / `v0.1.x` | `0.99.1` 及更早 | — |
+
+### 包选择：主线与兼容包
+
+模板默认引用主线 `STS2.RitsuLib`，跟踪 NuGet 最新版本：
 
 ```xml
 <PackageReference Include="STS2.RitsuLib" Version="*" />
 ```
 
-这里的 `Version="*"` 只表示编译时 NuGet 包可以解析到当前可用版本；真正随 Mod 分发并由游戏加载器检查的是 manifest 里的 `dependencies`。发布前，请确认 `RitsuLibModTemplate.json` 里的 `STS2-RitsuLib` 版本与实际编译、测试的 RitsuLib 版本一致。若想保守地锁运行时下限，可以继续把 manifest 写成最低支持版本，但 README 或发布说明中要明确这是运行时下限，不是当前编译使用的精确版本。
-
-项目还默认引用 `Nothing.STS2RitsuLib.ModAnalyzers`。这是一个 AI 编写的辅助分析器，用于在开发时提示 RitsuLib Mod 模板中常见的 manifest 和资源配置问题。
-
-三个 RitsuLib 包一次只能启用一个。如果仍针对 STS2 `0.104.0` 的代码构建，请注释主线包并启用 `0.104.0` 兼容包：
+**三个 RitsuLib 包一次只能启用一个。** 仍针对老分支的代码，注释主线包并启用对应兼容包：
 
 ```xml
+<!-- STS2 0.104.0 兼容分支（v0.3.0 起已停止维护） -->
 <PackageReference Include="STS2.RitsuLib.Compat.0.104.0" Version="*" />
-```
 
-如果需要针对 STS2 `0.103.2` 分支构建，请启用 `0.103.2` 兼容包：
-
-```xml
+<!-- STS2 0.103.2 兼容分支 -->
 <PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="*" />
 ```
 
-`0.104.0` 和 `0.103.2` 现在都按兼容分支维护，维护级别相同。兼容包只是选择对应游戏分支，并不会恢复所有旧 API；部分老 Mod 仍然需要修改并重新编译。
+兼容包只是选择对应游戏分支，并不会恢复所有旧 API；部分老 Mod 仍然需要修改并重新编译。
 
-升级到 STS2 `0.105.0` / RitsuLib 主线时，请特别检查这些变化：
+项目还引用 `Nothing.STS2RitsuLib.ModAnalyzers` —— 一个 AI 编写的辅助分析器，开发期会提示 RitsuLib Mod 模板中常见的 manifest 和资源配置问题。
 
-- 版本条件编译改为累积分间隔宏 `STS2_AT_LEAST_<ver>`；传统单目标宏 `STS2_V_<ver>` 不再推荐使用。
-- AnyPlayer 和 AnyAny 目标逻辑已有调整，旧卡牌目标、基础构造函数签名和注册逻辑需要按新主线 API 检查。
-- 卡牌右下角支持额外图标数量标签，并处理与原版 UI 的冲突；自定义 UI 或图标补丁需要确认显示层级和位置。
-- 保留/flush 相关 hook 和 event 有替换、移除或 `[Obsolete]` 标记；旧代码中使用 `CardRetainedEvent`、`CardsFlushedEvent` 或旧 `Hook.*` 入口时需要迁移。
-- Badge、BadgeRuntimeTemplate、BadgePool.CreateAll 和 ModBadgeTemplate 构造签名随上游变化调整；旧的注册模组死亡界面 Badge 代码可能需要更新以避免 `MissingMethodException`。
+### 发布前 checklist：版本对齐
 
-模板包含：
+> **`.csproj` 里的 `PackageReference` 只控制编译时拉取；`RitsuLibModTemplate.json` 的 `dependencies` 是游戏加载器在运行时校验的。两者互相独立，不会自动同步。**
 
-- 一个 `[ModInitializer]` 入口。
-- 一个最小自定义角色、角色卡池、遗物池和药水池。
-- 四张初始打击、四张初始防御和一个初始遗物示例。
-- 最小 Godot 静态占位场景，用于角色战斗模型、能量表盘、角色选择背景、商店和火堆。
-- 从原版资源复制并改成模板命名的占位 PNG，复制模板后可以直接替换。
-- 中英文基础本地化文件。
-- Godot 项目、导出配置、manifest 和构建脚本。
+如果编译时用了新版 RitsuLib 却忘了同步 manifest，玩家装了旧版 RitsuLib 仍能通过 manifest 校验、运行时却会因 API 缺失或签名变化崩掉；反过来 manifest 写得过新，会让本来能跑的玩家被错误拒绝。
+
+每次发布前请：
+
+1. 确认 `dotnet restore` 实际拉到的 `STS2.RitsuLib` 版本（看 `obj/project.assets.json`，或 IDE 的 NuGet 视图）。
+2. 把该版本填入 `RitsuLibModTemplate.json` 的 `dependencies[STS2-RitsuLib].version`。
+3. 切换到兼容包（`Compat.0.104.0` / `Compat.0.103.2`）时，把 `min_game_version` 同步调到对应分支；`dependencies[].id` 保持 `STS2-RitsuLib`（兼容包对外暴露的 mod id 不变）。
+4. 如果 manifest 版本是作为"运行时下限"而不是编译版本（例如声明 `0.3.0+` 都可用），在发布说明里明确，并自己测过下限能跑通。
+
+### 升级注意事项
+
+#### 升级到 RitsuLib `v0.3.0` / STS2 `0.106.0`
+
+主要变化（来自 [v0.3.0 release notes](https://github.com/BAKAOLC/STS2-RitsuLib/releases/tag/v0.3.0)）：
+
+- **破坏性变更**：移除 `RunSidecar` 相关设计，完全被 `RunSavedData` 取代。
+- 新增 `TargetType` 注册能力，支持自定义 `TargetType`。
+- 加强 Loader 的加载目标检测：分支版本文件使用哈希校验，未匹配的版本被丢弃。
+- 移除 `0.104.0` 兼容支持。
+
+#### 升级到 RitsuLib `v0.2.27` / STS2 `0.105.0`（历史）
+
+仍从更早分支（`v0.2.0` ~ `v0.2.26` / STS2 `0.104.0`）迁移时请检查：
+
+- 版本条件编译改为累积区间宏 `STS2_AT_LEAST_<ver>`；旧的 `STS2_V_<ver>` 不再推荐。
+- AnyPlayer / AnyAny 目标逻辑调整；旧卡牌目标、基础构造函数签名和注册逻辑要按新 API 检查。
+- 卡牌右下角支持额外图标数量标签，并处理与原版 UI 的冲突；自定义 UI 或图标补丁需确认显示层级和位置。
+- 保留/flush 相关 hook 和 event 有替换、移除或 `[Obsolete]` 标记；旧代码使用 `CardRetainedEvent`、`CardsFlushedEvent` 或旧 `Hook.*` 入口需迁移。
+- `Badge`、`BadgeRuntimeTemplate`、`BadgePool.CreateAll` 和 `ModBadgeTemplate` 构造签名调整；旧代码可能需更新以避免 `MissingMethodException`。
+
+## 构建
+
+| 命令 | 行为 |
+|---|---|
+| `dotnet build .\RitsuLibModTemplate.csproj` | 完整构建：编译 + `CopyMod` + `ExportPCK` |
+| `... /p:RunPckExport=false` | 跳过 PCK 导出（不需要 `GodotExe`） |
+| `... /p:CopyModOnBuild=false` | 跳过复制到游戏 mods 目录（产物只留在 `bin/`） |
+| `... /p:RunPckExport=false /p:CopyModOnBuild=false` | 仅验证 C# 编译 |
+
+完整构建会在 `Build` 之后运行两个 MSBuild target：
+
+- **`CopyMod`**：复制 dll 和 manifest 到游戏的 `mods/RitsuLibModTemplate` 目录。
+- **`ExportPCK`**：调用 `GodotExe` 导出 pck 到同一个 Mod 目录。
+
+> `RitsuLibDeployDir` 只控制 RitsuLib 框架自身的部署位置；当前 Mod 的 dll、manifest 和 pck 由 `ModOutputDir` 控制（默认 `$(Sts2Dir)/mods/$(MSBuildProjectName)`）。
 
 ## 目录结构
 
@@ -103,16 +167,55 @@ RitsuLibModTemplate/
 ├── RitsuLibModTemplateCode/   # C# 源码
 ├── RitsuLibModTemplate/       # Godot 资源、本地化和占位场景
 ├── RitsuLibModTemplate.csproj
-├── RitsuLibModTemplate.json
+├── RitsuLibModTemplate.json   # Mod manifest
 ├── project.godot
 └── local.props.template
 ```
 
-`res://RitsuLibModTemplate/...` 是 Godot/PCK 内的资源路径，对应仓库里的 `RitsuLibModTemplate/` 资源目录，不是 C# namespace。通过 NuGet 模板创建项目时，这些目录名、文件名和 namespace 会按新 Mod 名同步替换。
+`res://RitsuLibModTemplate/...` 是 Godot/PCK 内的资源路径，对应仓库里的 `RitsuLibModTemplate/` 资源目录，**不是 C# namespace**。通过 NuGet 模板创建项目时，这些目录名、文件名和 namespace 会按新 Mod 名同步替换。
+
+## 模板内容
+
+### 示例角色
+
+| 项 | 值 |
+|---|---|
+| 类型 | `RitsuLibModTemplateCharacter` |
+| 预期 id | `RITSU_LIB_MOD_TEMPLATE_CHARACTER_RITSU_LIB_MOD_TEMPLATE_CHARACTER` |
+| starter 牌组 | 4 × `RitsuLibModTemplateStrike`、4 × `RitsuLibModTemplateDefend`、1 × `RitsuLibModTemplateRelic` |
+| 资源配置 | `CharacterAssetProfile`；模板只指定静态占位资源，未指定的音频/拖尾/转场等字段从 `PlaceholderCharacterId` 回退 |
+
+### 示例卡牌与遗物
+
+| 类型 | 池 | 预期 id |
+|---|---|---|
+| `RitsuLibModTemplateStrike`（攻击） | 角色卡池 | `RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_STRIKE` |
+| `RitsuLibModTemplateDefend`（技能） | 角色卡池 | `RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_DEFEND` |
+| `RitsuLibModTemplateRelic` | `RitsuLibModTemplateRelicPool` | `RITSU_LIB_MOD_TEMPLATE_RELIC_RITSU_LIB_MOD_TEMPLATE_RELIC` |
+
+### 静态占位资源
+
+**图片**（`res://RitsuLibModTemplate/images/...`）：
+
+- `cards/RitsuLibModTemplateStrike.png`、`cards/RitsuLibModTemplateDefend.png`：示例卡图。
+- `relics/RitsuLibModTemplateRelic.png`：示例遗物图标。
+- `characters/RitsuLibModTemplate_character_*.png`：角色头像、角色选择图、地图标记和能量图标。
+
+**场景**（`res://RitsuLibModTemplate/scenes/characters/...`）：
+
+| 场景文件 | 用途 | 占位结构 |
+|---|---|---|
+| `RitsuLibModTemplate_character.tscn` | 战斗人物 | `%Visuals`、`%Bounds`、`%IntentPos`、`%CenterPos`、`%TalkPos` |
+| `RitsuLibModTemplate_energy_counter.tscn` | 能量表盘 | `%EnergyVfxBack`、`%Layers`、`%RotationLayers`、`%EnergyVfxFront`、`Label` |
+| `RitsuLibModTemplate_merchant.tscn` | 商店人物 | — |
+| `RitsuLibModTemplate_rest_site.tscn` | 火堆人物 | `%ControlRoot`、`%SelectionReticle`、`%Hitbox`、`%ThoughtBubbleRight`、`%ThoughtBubbleLeft` |
+| `RitsuLibModTemplate_character_select_bg.tscn` | 角色选择背景 | — |
+
+这些资源只用于保证模板可见、可替换，不追求原版动画效果。复制模板后替换为自己的素材即可；如果改了路径，同步更新对应 `AssetProfile`。
 
 ## Manifest 格式
 
-`RitsuLibModTemplate.json` 是 Mod 的清单文件，游戏加载器在启动时会读取它来识别 Mod、检查依赖并决定是否加载。完整字段如下：
+`RitsuLibModTemplate.json` 是 Mod 的清单文件，游戏加载器在启动时读取它来识别 Mod、检查依赖、决定是否加载。完整示例：
 
 ```json
 {
@@ -127,10 +230,7 @@ RitsuLibModTemplate/
   "affects_gameplay": true,
   "min_game_version": "0.106.0",
   "dependencies": [
-    {
-      "id": "STS2-RitsuLib",
-      "version": "0.3.0"
-    }
+    { "id": "STS2-RitsuLib", "version": "0.3.0" }
   ]
 }
 ```
@@ -139,122 +239,23 @@ RitsuLibModTemplate/
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
-| `id` | string | Mod 的唯一标识符。**必须和 `Entry.ModId` 保持完全一致**，也建议与 `mods/<id>` 目录名一致。游戏内的依赖、本地化前缀和资源路径都依赖这个值。改名时所有用到 `ModId` 的地方都要同步。 |
-| `name` | string | 在 Mod 列表中显示的名称，可包含空格和中文。 |
-| `pck_name` | string | 游戏要加载的 `.pck` 文件名（不含扩展名）。**必须与 `.csproj` 实际导出的 PCK 文件名一致**，否则即使 `has_pck=true` 也加载不到资源。模板里和 `MSBuildProjectName` 同名。 |
-| `author` | string | 作者名，显示用，无强校验。 |
-| `description` | string | Mod 简介，显示在 Mod 列表里。 |
-| `version` | string | 当前 Mod 自身的版本号，建议使用 `主.次.修` 形式（SemVer）。每次发布前更新。 |
-| `has_pck` | bool | 是否随 Mod 分发 `.pck` 资源包。模板默认为 `true`；纯代码 Mod 可置为 `false` 并跳过 `ExportPCK`。 |
-| `has_dll` | bool | 是否随 Mod 分发 `.dll`。模板默认为 `true`；纯资源 Mod 可置为 `false`。 |
-| `affects_gameplay` | bool | 是否影响游戏玩法。开启后，游戏会在存档、成就等场景做相应标记。仅纯视觉/本地化等不会改变战斗结果的 Mod 可设为 `false`。 |
-| `min_game_version` | string | 此 Mod 兼容的最低 STS2 游戏版本。低于该版本的游戏会拒绝加载。**应与 `.csproj` 中选用的 RitsuLib 包面向的游戏分支匹配**（主线包 ≥ `0.105.0`，兼容包 `0.104.0` / `0.103.2`）。 |
-| `dependencies` | array | 此 Mod 依赖的其他 Mod 列表。数组形式，每项使用 `id` + `version` 声明。**旧版的单对象 `min_version` 写法不再支持。** |
-| `dependencies[].id` | string | 被依赖 Mod 的 `id`。RitsuLib 框架本身的 id 是 `STS2-RitsuLib`。 |
-| `dependencies[].version` | string | 被依赖 Mod 的版本号，作为运行时最低兼容下限。游戏加载器会用它对照已安装版本，低于则拒绝加载。 |
+| `id` | string | Mod 唯一标识。**必须与 `Entry.ModId` 完全一致**，也建议与 `mods/<id>` 目录名一致。游戏内依赖、本地化前缀和资源路径都依赖这个值 |
+| `name` | string | Mod 列表中的显示名，可包含空格和中文 |
+| `pck_name` | string | `.pck` 文件名（不含扩展名）。**必须与 `.csproj` 实际导出的 PCK 文件名一致**，否则即使 `has_pck=true` 也加载不到资源 |
+| `author` | string | 作者名，显示用 |
+| `description` | string | Mod 简介，显示在 Mod 列表 |
+| `version` | string | 此 Mod 自身的版本号，建议 SemVer（`主.次.修`），每次发布前更新 |
+| `has_pck` | bool | 是否分发 `.pck`。纯代码 Mod 可置 `false` 并跳过 `ExportPCK` |
+| `has_dll` | bool | 是否分发 `.dll`。纯资源 Mod 可置 `false` |
+| `affects_gameplay` | bool | 是否影响游戏玩法。开启后游戏会在存档/成就等处做相应标记；仅纯视觉/本地化可设 `false` |
+| `min_game_version` | string | 兼容的最低 STS2 版本，低于该版本拒绝加载。**应与 `.csproj` 选用的 RitsuLib 包面向的游戏分支匹配**（见上文 [RitsuLib 版本兼容性](#ritsulib-版本兼容性)） |
+| `dependencies` | array | 依赖列表。每项使用 `id` + `version`。**旧版单对象 `min_version` 写法已不支持** |
+| `dependencies[].id` | string | 被依赖 Mod 的 `id`。RitsuLib 框架的 id 是 `STS2-RitsuLib` |
+| `dependencies[].version` | string | 被依赖 Mod 的最低版本。**`STS2-RitsuLib` 的版本必须与 `.csproj` 编译时的 NuGet 版本严格一致**，详见上文 [发布前 checklist：版本对齐](#发布前-checklist版本对齐) |
 
-### **重要：`dependencies` 里的 RitsuLib 版本必须与 `.csproj` 当前使用的 RitsuLib 版本一致**
+## 开发提示
 
-这是发布前最容易踩坑的一项，请务必检查。
-
-- `.csproj` 中 `PackageReference Include="STS2.RitsuLib" Version="*"` 只控制**编译时**拉取哪个 NuGet 包；`*` 会在 restore 时解析到当时的最新版本。
-- `RitsuLibModTemplate.json` 中的 `dependencies[STS2-RitsuLib].version` 控制**运行时**游戏加载器看到的版本要求，它会随 Mod 一起分发。
-- 两者**互相独立、不会自动同步**。如果你编译时用了新版 RitsuLib，却忘了升级 manifest 里的版本，玩家装了旧版 RitsuLib 也能通过 manifest 校验，但运行时会因为 API 缺失或签名变化崩掉。反之，manifest 写得过新会让本来能跑的玩家被错误拒绝。
-- 发布前的固定动作：
-  1. 在 IDE 或终端确认 `dotnet restore` 实际拉到的 `STS2.RitsuLib` 版本（查看 `obj/project.assets.json`，或 NuGet 包管理器中的版本号）。
-  2. 把该版本号填入 `RitsuLibModTemplate.json` 的 `dependencies[STS2-RitsuLib].version`。
-  3. 切换到兼容包（`STS2.RitsuLib.Compat.0.104.0` / `Compat.0.103.2`）时，同步把 `min_game_version` 调整到对应分支，并保持 `dependencies` 里的 `id` 仍为 `STS2-RitsuLib`（兼容包对外暴露的 mod id 不变）。
-- 若你确实想把 manifest 里的版本写成"最低运行时下限"而非编译版本（例如声明 `0.3.0+` 都可用），请在 README 或发布说明里明确这是运行时下限，并自行测试过下限版本下 Mod 仍能跑通。
-
-模板当前示例声明 `STS2-RitsuLib` 为 `0.3.0`。复制模板后，请按上述步骤校对，再发布。
-
-## 配置本机路径
-
-复制：
-
-```powershell
-Copy-Item .\local.props.template .\local.props
-```
-
-然后在 `local.props` 中设置或按需覆盖：
-
-- `Sts2Dir`：Slay the Spire 2 安装目录。
-- `Sts2DataDir`：游戏 dll 目录，通常是 `$(Sts2Dir)/data_sts2_windows_x86_64`。
-- `GodotExe`：用于导出 pck 的 MegaDot/Godot 可执行文件。
-- `RitsuLibDeployDir`：RitsuLib 本机部署目录，默认是 `$(Sts2Dir)/mods/STS2-RitsuLib`。它用于 RitsuLib 包/构建逻辑把 RitsuLib 复制到游戏 mods 目录，不是当前 Mod 自身的输出目录。
-
-`local.props` 已加入 `.gitignore`，不要提交。
-
-## 构建
-
-只验证 C# 编译，并跳过 `CopyMod` 和 `ExportPCK`：
-
-```powershell
-dotnet build .\RitsuLibModTemplate.csproj /p:RunPckExport=false /p:CopyModOnBuild=false
-```
-
-正常构建会在 `Build` 后运行两个 MSBuild target：
-
-- `CopyMod`：复制 dll 和 manifest 到游戏的 `mods/RitsuLibModTemplate` 目录。
-- `ExportPCK`：调用 `GodotExe` 导出 pck 到同一个 Mod 目录。
-
-`RitsuLibDeployDir` 单独控制 RitsuLib 框架自身的本机部署位置；当前 Mod 的 dll、manifest 和 pck 仍由 `ModOutputDir` 控制。
-
-```powershell
-dotnet build .\RitsuLibModTemplate.csproj
-```
-
-也可以只跳过其中一个 target：
-
-```powershell
-dotnet build .\RitsuLibModTemplate.csproj /p:CopyModOnBuild=false
-dotnet build .\RitsuLibModTemplate.csproj /p:RunPckExport=false
-```
-
-构建成功后，dll、manifest 和 pck 会复制到游戏的 `mods/RitsuLibModTemplate` 目录。
-
-
-## 示例内容
-
-示例角色：
-
-- 类型：`RitsuLibModTemplateCharacter`
-- 预期 id：`RITSU_LIB_MOD_TEMPLATE_CHARACTER_RITSU_LIB_MOD_TEMPLATE_CHARACTER`
-- starter：4 张 `RitsuLibModTemplateStrike`、4 张 `RitsuLibModTemplateDefend`、1 个 `RitsuLibModTemplateRelic`
-- 角色资源通过 `CharacterAssetProfile` 配置。模板只指定已经复制的静态占位资源，未指定的音频、拖尾、转场等字段继续从 `PlaceholderCharacterId` 回退。
-
-示例卡牌：
-
-- `RitsuLibModTemplateStrike`：攻击牌，角色卡池，预期 id `RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_STRIKE`
-- `RitsuLibModTemplateDefend`：技能牌，角色卡池，预期 id `RITSU_LIB_MOD_TEMPLATE_CARD_RITSU_LIB_MOD_TEMPLATE_DEFEND`
-
-示例遗物：
-
-- 类型：`RitsuLibModTemplateRelic`
-- 遗物池：`RitsuLibModTemplateRelicPool`
-- 预期 id：`RITSU_LIB_MOD_TEMPLATE_RELIC_RITSU_LIB_MOD_TEMPLATE_RELIC`
-
-## 静态占位资源
-
-模板内置的图片资源已经放在 `res://RitsuLibModTemplate/images/...`：
-
-- `images/cards/RitsuLibModTemplateStrike.png`、`images/cards/RitsuLibModTemplateDefend.png`：示例卡图。
-- `images/relics/RitsuLibModTemplateRelic.png`：示例遗物图标。
-- `images/characters/RitsuLibModTemplate_character_*.png`：角色头像、角色选择图、地图标记和能量图标。
-
-模板内置的场景资源已经放在 `res://RitsuLibModTemplate/scenes/characters/...`：
-
-- `RitsuLibModTemplate_character.tscn`：静态战斗人物，占位结构包含 `%Visuals`、`%Bounds`、`%IntentPos`、`%CenterPos`、`%TalkPos`。
-- `RitsuLibModTemplate_energy_counter.tscn`：静态能量表盘，占位结构包含 `%EnergyVfxBack`、`%Layers`、`%RotationLayers`、`%EnergyVfxFront`、`Label`。
-- `RitsuLibModTemplate_merchant.tscn`：静态商店人物。
-- `RitsuLibModTemplate_rest_site.tscn`：静态火堆人物，占位结构包含 `%ControlRoot`、`%SelectionReticle`、`%Hitbox`、`%ThoughtBubbleRight`、`%ThoughtBubbleLeft`。
-- `RitsuLibModTemplate_character_select_bg.tscn`：角色选择背景。
-
-这些资源只用于保证模板可见、可替换，不追求原版动画效果。复制模板后，把同名 PNG 或场景替换成自己的素材即可；如果路径改变，也同步更新对应 `AssetProfile`。
-
-## 教程提示
-
-- 新内容优先写 `AssetProfile`，单个历史兼容字段才考虑覆写 `Custom...Path`。
-- 某个角色资源字段没写时，RitsuLib 会从 `PlaceholderCharacterId` 对应的原版角色配置里补齐。
+- 新内容优先写 `AssetProfile`；个别历史兼容字段才考虑覆写 `Custom...Path`。
+- 角色资源字段没写时，RitsuLib 会从 `PlaceholderCharacterId` 对应的原版角色配置补齐。
 - 资源路径要以 `res://` 开头，并确认 PCK 内目录名和大小写正确。
-- 如果是 `.tscn`，确认场景已经打包进 Mod 资源；需要绑定脚本时，优先写本地包装类并在 `Entry.Initialize()` 调用 `EnsureGodotScriptsRegistered(...)`。
+- `.tscn` 场景需要确认已打包进 Mod 资源；需绑定脚本时，写本地包装类并在 `Entry.Initialize()` 调用 `EnsureGodotScriptsRegistered(...)`。
