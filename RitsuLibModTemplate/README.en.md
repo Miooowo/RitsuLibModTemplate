@@ -28,16 +28,16 @@ You can get this project two ways: via the NuGet template (automatic rename), or
 
 ```powershell
 # Install the template
-dotnet new install STS2.RitsuLib.ModTemplate
+dotnet new install Miooowo.STS2.RitsuLib.ModTemplate
 
 # Create a new mod
-dotnet new ritsulibmod -n MyMod
+dotnet new mioooworitsulibmod -n MyMod
 
 # Uninstall the template
-dotnet new uninstall STS2.RitsuLib.ModTemplate
+dotnet new uninstall Miooowo.STS2.RitsuLib.ModTemplate
 ```
 
-`dotnet new ritsulibmod -n MyMod` generates a project called `MyMod` and renames `RitsuLibModTemplate`, sample class names, sample resource file names, resource folders, manifest names, namespaces, and localization IDs to match the new name.
+`dotnet new mioooworitsulibmod -n MyMod` generates a project called `MyMod` and renames `RitsuLibModTemplate`, sample class names, sample resource file names, resource folders, manifest names, namespaces, and localization IDs to match the new name.
 
 ### Option B: manual copy
 

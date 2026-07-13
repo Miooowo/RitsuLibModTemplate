@@ -7,10 +7,10 @@
     "Mod",
     "Godot"
   ],
-  "identity": "STS2.RitsuLib.ModTemplate.CSharp",
-  "groupIdentity": "STS2.RitsuLib.ModTemplate",
-  "name": "RitsuLib Mod Template",
-  "shortName": "ritsulibmod",
+  "identity": "Miooowo.STS2.RitsuLib.ModTemplate.CSharp",
+  "groupIdentity": "Miooowo.STS2.RitsuLib.ModTemplate",
+  "name": "Miooowo RitsuLib Mod Template",
+  "shortName": "mioooworitsulibmod",
   "sourceName": "RitsuLibModTemplate",
   "preferNameDirectory": true,
   "guids": [

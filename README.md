@@ -26,26 +26,26 @@
 
 ```powershell
 # 安装模板
-dotnet new install STS2.RitsuLib.ModTemplate
+dotnet new install Miooowo.STS2.RitsuLib.ModTemplate
 
 # 创建新 Mod
-dotnet new ritsulibmod -n MyMod
+dotnet new mioooworitsulibmod -n MyMod
 
 # 卸载模板
-dotnet new uninstall STS2.RitsuLib.ModTemplate
+dotnet new uninstall Miooowo.STS2.RitsuLib.ModTemplate
 ```
 
-`dotnet new ritsulibmod -n MyMod` 会生成名为 `MyMod` 的工程，并把模板中的 `RitsuLibModTemplate`、示例类名、资源文件名、资源目录、manifest 名称、namespace 和本地化 id 同步替换成新名称。
+`dotnet new mioooworitsulibmod -n MyMod` 会生成名为 `MyMod` 的工程，并把模板中的 `RitsuLibModTemplate`、示例类名、资源文件名、资源目录、manifest 名称、namespace 和本地化 id 同步替换成新名称。
 
 ### 在 Rider 中创建项目
 
-完成一次 `dotnet new install STS2.RitsuLib.ModTemplate` 后，Rider 会自动识别该模板：
+完成一次 `dotnet new install Miooowo.STS2.RitsuLib.ModTemplate` 后，Rider 会自动识别该模板：
 
 1. `File` → `New Solution`（或欢迎界面的 `New Solution`）。
-2. 在左侧 `Custom Templates`（或 `More Templates`）分类中选择 `RitsuLib Mod Template`（短名 `ritsulibmod`）。
+2. 在左侧 `Custom Templates`（或 `More Templates`）分类中选择 `Miooowo RitsuLib Mod Template`（短名 `mioooworitsulibmod`）。
 3. 在右侧填入 `Solution name`（新 Mod 名，例如 `MyMod`）和保存位置，点击 `Create`。
 
-Rider 在背后调用 `dotnet new ritsulibmod -n <Solution name>`，行为与命令行完全一致。如果模板没出现在列表里，先确认 `dotnet new install` 成功，再在 Rider 的 `New Solution` 对话框中刷新或重启 Rider。
+Rider 在背后调用 `dotnet new mioooworitsulibmod -n <Solution name>`，行为与命令行完全一致。如果模板没出现在列表里，先确认 `dotnet new install` 成功，再在 Rider 的 `New Solution` 对话框中刷新或重启 Rider。
 
 ## 配置本机路径
 
