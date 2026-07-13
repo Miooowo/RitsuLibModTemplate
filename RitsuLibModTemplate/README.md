@@ -28,16 +28,16 @@
 
 ```powershell
 # 安装模板
-dotnet new install STS2.RitsuLib.ModTemplate
+dotnet new install Miooowo.STS2.RitsuLib.ModTemplate
 
 # 创建新 Mod
-dotnet new ritsulibmod -n MyMod
+dotnet new mioooworitsulibmod -n MyMod
 
 # 卸载模板
-dotnet new uninstall STS2.RitsuLib.ModTemplate
+dotnet new uninstall Miooowo.STS2.RitsuLib.ModTemplate
 ```
 
-`dotnet new ritsulibmod -n MyMod` 会生成名为 `MyMod` 的工程，并把模板中的 `RitsuLibModTemplate`、示例类名、资源文件名、资源目录、manifest 名称、namespace 和本地化 id 同步替换成新名称。
+`dotnet new mioooworitsulibmod -n MyMod` 会生成名为 `MyMod` 的工程，并把模板中的 `RitsuLibModTemplate`、示例类名、资源文件名、资源目录、manifest 名称、namespace 和本地化 id 同步替换成新名称。
 
 ### 方式 B：手动复制模板
 

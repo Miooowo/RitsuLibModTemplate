@@ -26,26 +26,26 @@ A copyable, buildable RitsuLib mod template providing a general Godot/C# project
 
 ```powershell
 # Install the template
-dotnet new install STS2.RitsuLib.ModTemplate
+dotnet new install Miooowo.STS2.RitsuLib.ModTemplate
 
 # Create a new mod
-dotnet new ritsulibmod -n MyMod
+dotnet new mioooworitsulibmod -n MyMod
 
 # Uninstall the template
-dotnet new uninstall STS2.RitsuLib.ModTemplate
+dotnet new uninstall Miooowo.STS2.RitsuLib.ModTemplate
 ```
 
-`dotnet new ritsulibmod -n MyMod` generates a project called `MyMod` and renames `RitsuLibModTemplate`, sample class names, sample resource file names, resource folders, manifest names, namespaces, and localization IDs to match the new name.
+`dotnet new mioooworitsulibmod -n MyMod` generates a project called `MyMod` and renames `RitsuLibModTemplate`, sample class names, sample resource file names, resource folders, manifest names, namespaces, and localization IDs to match the new name.
 
 ### Creating a project in Rider
 
-After running `dotnet new install STS2.RitsuLib.ModTemplate` once, Rider will pick up the template automatically:
+After running `dotnet new install Miooowo.STS2.RitsuLib.ModTemplate` once, Rider will pick up the template automatically:
 
 1. `File` → `New Solution` (or `New Solution` from the welcome screen).
-2. Scroll down the template list on the left and pick `RitsuLib Mod Template` under `Custom Templates` (or `More Templates`). Short name: `ritsulibmod`.
+2. Scroll down the template list on the left and pick `Miooowo RitsuLib Mod Template` under `Custom Templates` (or `More Templates`). Short name: `mioooworitsulibmod`.
 3. Enter `Solution name` (the new mod name, e.g. `MyMod`) and a location, then click `Create`.
 
-Rider runs `dotnet new ritsulibmod -n <Solution name>` under the hood, matching the CLI behavior. If the template does not appear, confirm `dotnet new install` succeeded and then refresh the `New Solution` dialog or restart Rider.
+Rider runs `dotnet new mioooworitsulibmod -n <Solution name>` under the hood, matching the CLI behavior. If the template does not appear, confirm `dotnet new install` succeeded and then refresh the `New Solution` dialog or restart Rider.
 
 ## Local Path Configuration
 
