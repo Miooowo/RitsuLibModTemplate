@@ -68,12 +68,12 @@ Set these values in `local.props` (the file is in `.gitignore`; do not commit it
 >
 > `dependencies[STS2-RitsuLib].version` in `RitsuLibModTemplate.json` **must exactly match** the `STS2.RitsuLib` version your `.csproj` actually compiles against. The two are independent and **never auto-synced** — mismatches let players pass the manifest check and crash at runtime, or get wrongly rejected when their RitsuLib would have worked. See [Pre-release checklist: version alignment](#pre-release-checklist-version-alignment) below for the step-by-step procedure.
 
-### Current version snapshot (as of 2026-05-22)
+### Current version snapshot (as of 2026-07-13)
 
 | Item | Value |
 |---|---|
-| Current STS2 game version | `0.106.0` |
-| Current RitsuLib version | `0.3.0` |
+| Current STS2 game version | `0.108.0` |
+| Current RitsuLib version | `0.4.57` |
 | Template manifest status | `min_game_version` and `dependencies[STS2-RitsuLib].version` are aligned |
 
 ### Version mapping
@@ -82,7 +82,8 @@ The table summarizes the mainline STS2 target for each boundary RitsuLib release
 
 | RitsuLib version | Mainline STS2 target | Compat packages |
 |---|---|---|
-| `v0.3.0+` (since 2026-05-22) | `0.106.0` | `0.103.2`; `0.104.0` compat removed |
+| `v0.4.50+` (since 2026-07-03) | `0.108.0` | `0.107.1` |
+| `v0.3.0` ~ `v0.4.49` | `0.106.0` (with later patch-line evolution) | `0.103.2`; `0.104.0` compat removed |
 | `v0.2.29` ~ `v0.2.40` | `0.105.1` | `0.104.0`, `0.103.2` |
 | `v0.2.27` ~ `v0.2.28` | `0.105.0` | `0.104.0`, `0.103.2` |
 | `v0.2.0` ~ `v0.2.26` | `0.104.0` | `0.103.2` (experimental from `v0.2.6`); `0.99.1` compat removed in this range |
@@ -99,11 +100,8 @@ The template references mainline `STS2.RitsuLib` by default, tracking the latest
 **Only enable one RitsuLib package at a time.** If your code still targets an older branch, comment out the mainline and enable the matching compat package:
 
 ```xml
-<!-- STS2 0.104.0 compatibility branch (no longer maintained since v0.3.0) -->
-<PackageReference Include="STS2.RitsuLib.Compat.0.104.0" Version="*" />
-
-<!-- STS2 0.103.2 compatibility branch -->
-<PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="*" />
+<!-- STS2 0.107.1 compatibility branch -->
+<PackageReference Include="STS2.RitsuLib.Compat.0.107.1" Version="*" />
 ```
 
 Compatibility packages only select the matching game branch; they do not restore every old API. Some old mods still need code changes and recompilation.
@@ -120,19 +118,18 @@ Before every release:
 
 1. Confirm the actual `STS2.RitsuLib` version `dotnet restore` resolved (look in `obj/project.assets.json` or your IDE's NuGet view).
 2. Write that version into `dependencies[STS2-RitsuLib].version` in `RitsuLibModTemplate.json`.
-3. When you switch to a compatibility package (`Compat.0.104.0` / `Compat.0.103.2`), also adjust `min_game_version` to the matching branch. Keep `dependencies[].id` as `STS2-RitsuLib` (compatibility packages expose the same mod id to the loader).
-4. If you intentionally want the manifest version to act as a **runtime floor** (e.g. declaring "`0.3.0+` works"), document this in your release notes and verify the mod runs against the declared floor.
+3. When you switch to a compatibility package (for example `Compat.0.107.1`), also adjust `min_game_version` to the matching branch. Keep `dependencies[].id` as `STS2-RitsuLib` (compatibility packages expose the same mod id to the loader).
+4. If you intentionally want the manifest version to act as a **runtime floor** (e.g. declaring "`0.4.57+` works"), document this in your release notes and verify the mod runs against the declared floor.
 
 ### Upgrade notes
 
-#### Upgrading to RitsuLib `v0.3.0` / STS2 `0.106.0`
+#### Upgrading to RitsuLib `v0.4.57` / STS2 `0.108.0`
 
-Major changes (from the [v0.3.0 release notes](https://github.com/BAKAOLC/STS2-RitsuLib/releases/tag/v0.3.0)):
+Major changes (from [v0.4.50+ release notes](https://github.com/BAKAOLC/STS2-RitsuLib/releases)):
 
-- **Breaking**: `RunSidecar` removed, fully replaced by `RunSavedData`.
-- New `TargetType` registration capability for custom `TargetType`s.
-- Loader target detection strengthened: branch version files now use hash verification, and mismatched versions are discarded.
-- `0.104.0` compatibility removed.
+- Mainline has moved to `STS2 0.108.x`; use `Compat.0.107.1` if you still need the older branch.
+- `v0.4.57` removed several old deprecated API members, and future major updates will simplify more APIs. Replace `[Obsolete]` calls early where possible.
+- Keep using mainline `STS2.RitsuLib`, and lock the manifest dependency version to what `dotnet restore` actually resolved before release.
 
 #### Upgrading to RitsuLib `v0.2.27` / STS2 `0.105.0` (historical)
 
@@ -228,9 +225,9 @@ These resources only exist to make the template visible and replaceable; they do
   "has_pck": true,
   "has_dll": true,
   "affects_gameplay": true,
-  "min_game_version": "0.106.0",
+  "min_game_version": "0.108.0",
   "dependencies": [
-    { "id": "STS2-RitsuLib", "version": "0.3.0" }
+    { "id": "STS2-RitsuLib", "version": "0.4.57" }
   ]
 }
 ```

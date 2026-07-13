@@ -68,12 +68,12 @@ Copy-Item .\local.props.template .\local.props
 >
 > `RitsuLibModTemplate.json` 中 `dependencies[STS2-RitsuLib].version` **必须**与 `.csproj` 里 `STS2.RitsuLib` 包实际编译使用的版本一致。两者互相独立、**不会自动同步**——不对齐会让玩家通过 manifest 校验后在运行时崩溃，或在 RitsuLib 已满足条件时被错误拒绝。详细步骤见下方 [发布前 checklist：版本对齐](#发布前-checklist版本对齐)。
 
-### 当前版本快照（截至 2026-05-22）
+### 当前版本快照（截至 2026-07-13）
 
 | 项 | 值 |
 |---|---|
-| STS2 游戏当前版本 | `0.106.0` |
-| RitsuLib 当前版本 | `0.3.0` |
+| STS2 游戏当前版本 | `0.108.0` |
+| RitsuLib 当前版本 | `0.4.57` |
 | 模板 manifest 状态 | `min_game_version` 与 `dependencies[STS2-RitsuLib].version` 已对齐 |
 
 ### 版本对应表
@@ -82,7 +82,8 @@ Copy-Item .\local.props.template .\local.props
 
 | RitsuLib 版本 | 主要目标 STS2 版本 | 兼容（Compat）包 |
 |---|---|---|
-| `v0.3.0+`（2026-05-22 起） | `0.106.0` | `0.103.2`；删除了 `0.104.0` 兼容支持 |
+| `v0.4.50+`（2026-07-03 起） | `0.108.0` | `0.107.1` |
+| `v0.3.0` ~ `v0.4.49` | `0.106.0`（后续小版本逐步演进） | `0.103.2`；`0.104.0` 兼容支持已移除 |
 | `v0.2.29` ~ `v0.2.40` | `0.105.1` | `0.104.0`、`0.103.2` |
 | `v0.2.27` ~ `v0.2.28` | `0.105.0` | `0.104.0`、`0.103.2` |
 | `v0.2.0` ~ `v0.2.26` | `0.104.0` | 自 `v0.2.6` 起实验性提供 `0.103.2`；同步移除 `0.99.1` 兼容 |
@@ -99,11 +100,8 @@ Copy-Item .\local.props.template .\local.props
 **三个 RitsuLib 包一次只能启用一个。** 仍针对老分支的代码，注释主线包并启用对应兼容包：
 
 ```xml
-<!-- STS2 0.104.0 兼容分支（v0.3.0 起已停止维护） -->
-<PackageReference Include="STS2.RitsuLib.Compat.0.104.0" Version="*" />
-
-<!-- STS2 0.103.2 兼容分支 -->
-<PackageReference Include="STS2.RitsuLib.Compat.0.103.2" Version="*" />
+<!-- STS2 0.107.1 兼容分支 -->
+<PackageReference Include="STS2.RitsuLib.Compat.0.107.1" Version="*" />
 ```
 
 兼容包只是选择对应游戏分支，并不会恢复所有旧 API；部分老 Mod 仍然需要修改并重新编译。
@@ -120,19 +118,18 @@ Copy-Item .\local.props.template .\local.props
 
 1. 确认 `dotnet restore` 实际拉到的 `STS2.RitsuLib` 版本（看 `obj/project.assets.json`，或 IDE 的 NuGet 视图）。
 2. 把该版本填入 `RitsuLibModTemplate.json` 的 `dependencies[STS2-RitsuLib].version`。
-3. 切换到兼容包（`Compat.0.104.0` / `Compat.0.103.2`）时，把 `min_game_version` 同步调到对应分支；`dependencies[].id` 保持 `STS2-RitsuLib`（兼容包对外暴露的 mod id 不变）。
-4. 如果 manifest 版本是作为"运行时下限"而不是编译版本（例如声明 `0.3.0+` 都可用），在发布说明里明确，并自己测过下限能跑通。
+3. 切换到兼容包（例如 `Compat.0.107.1`）时，把 `min_game_version` 同步调到对应分支；`dependencies[].id` 保持 `STS2-RitsuLib`（兼容包对外暴露的 mod id 不变）。
+4. 如果 manifest 版本是作为"运行时下限"而不是编译版本（例如声明 `0.4.57+` 都可用），在发布说明里明确，并自己测过下限能跑通。
 
 ### 升级注意事项
 
-#### 升级到 RitsuLib `v0.3.0` / STS2 `0.106.0`
+#### 升级到 RitsuLib `v0.4.57` / STS2 `0.108.0`
 
-主要变化（来自 [v0.3.0 release notes](https://github.com/BAKAOLC/STS2-RitsuLib/releases/tag/v0.3.0)）：
+主要变化（来自 [v0.4.50+ release notes](https://github.com/BAKAOLC/STS2-RitsuLib/releases)）：
 
-- **破坏性变更**：移除 `RunSidecar` 相关设计，完全被 `RunSavedData` 取代。
-- 新增 `TargetType` 注册能力，支持自定义 `TargetType`。
-- 加强 Loader 的加载目标检测：分支版本文件使用哈希校验，未匹配的版本被丢弃。
-- 移除 `0.104.0` 兼容支持。
+- 主线已切到 `STS2 0.108.x`；如需老分支请改用 `Compat.0.107.1`。
+- `v0.4.57` 删除了部分已废弃旧 API，后续大版本还会继续收敛，建议尽早替换已 `[Obsolete]` 的调用。
+- 模板建议保持 `STS2.RitsuLib` 主线包并在发布前把 manifest 依赖版本锁到 `dotnet restore` 的实际解析结果。
 
 #### 升级到 RitsuLib `v0.2.27` / STS2 `0.105.0`（历史）
 
@@ -228,9 +225,9 @@ RitsuLibModTemplate/
   "has_pck": true,
   "has_dll": true,
   "affects_gameplay": true,
-  "min_game_version": "0.106.0",
+  "min_game_version": "0.108.0",
   "dependencies": [
-    { "id": "STS2-RitsuLib", "version": "0.3.0" }
+    { "id": "STS2-RitsuLib", "version": "0.4.57" }
   ]
 }
 ```
